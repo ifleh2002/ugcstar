@@ -12,7 +12,7 @@ import Admin from "@/pages/Admin";
 import StarProfile from "@/pages/StarProfile";
 import {AuthProvider,useAuth} from "@/lib/api";
 import type {ReactNode} from "react";
-function Protected({children,admin=false}:{children:ReactNode;admin?:boolean}) {const {user,loading}=useAuth(); const location=useLocation();if(loading)return <p className="container py-12">Chargement…</p>;if(!user)return <Navigate to={"/connexion?next="+encodeURIComponent(location.pathname)} replace/>;if(admin&&user.role!=="admin")return <p role="alert" className="container py-12">Cet espace est réservé à l’administration.</p>;return <>{children}</>;}
+function Protected({children,admin=false}:{children:ReactNode;admin?:boolean}) {const {user,loading,error}=useAuth(); const location=useLocation();if(loading)return <p className="container py-12">Chargement…</p>;if(error)return <p role="alert" className="container py-12">{error}</p>;if(!user)return <Navigate to={"/connexion?next="+encodeURIComponent(location.pathname)} replace/>;if(admin&&user.role!=="admin")return <p role="alert" className="container py-12">Cet espace est réservé à l’administration.</p>;return <>{children}</>;}
 import Screenads from "@/pages/Screenads";
 import Contracts from "@/pages/Contracts";
 import NotFound from "@/pages/NotFound";

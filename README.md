@@ -1,59 +1,110 @@
-# StarCast — vidéos IA & tournages réels
+# StarCast — Supabase + Vercel
 
-Version enrichie du projet joint. React, TypeScript, Vite, Tailwind ; serveur Node.js 24 avec SQLite intégré.
+React, TypeScript et Vite. Les comptes utilisent **Supabase Auth** et les données **Supabase PostgreSQL**. Aucun serveur SQLite ni fichier de base de données n’est nécessaire sur Vercel.
 
-## Démarrage (Windows, macOS ou Linux)
+Projet Supabase connecté : `https://coghwghshcjaaqrtyvlh.supabase.co`.
 
-1. Installer Node.js **24 ou supérieur**.
-2. Décompresser cette archive, ouvrir un terminal dans son dossier et exécuter `npm ci`.
-3. Copier `.env.example` vers `.env`. Renseigner `ADMIN_EMAIL` et un `ADMIN_PASSWORD` personnel d’au moins 12 caractères. Ne jamais exposer ce fichier.
-4. Exécuter `npm run server`.
-5. Dans un second terminal, exécuter `npm run dev` et ouvrir **http://localhost:8080**.
+## 1. Initialiser la base (une fois)
 
-Pour utiliser le build : `npm run build`, puis `npm start`, et ouvrir **http://127.0.0.1:3001**. Le serveur sert l’interface et l’API. Ne pas utiliser un hébergement statique seul : l’authentification exige le serveur.
+La clé publishable fournie est une clé publique d’application, pas un accès administrateur à PostgreSQL. Elle ne peut pas exécuter une migration SQL.
 
-Le premier démarrage avec les variables administrateur crée le compte administrateur. Modifier la variable ensuite ne change pas un compte existant. Il n’y a pas de mot de passe admin universel ou affiché dans le navigateur.
+1. Ouvrir le projet dans le [dashboard Supabase](https://supabase.com/dashboard/project/coghwghshcjaaqrtyvlh).
+2. Ouvrir **SQL Editor → New query**.
+3. Copier le contenu **complet** de [`supabase/setup.sql`](supabase/setup.sql), puis cliquer **Run**.
 
-## Parcours disponibles
+Ce script crée les tables, les règles RLS, les fonctions de création/validation des commandes et les profils fictifs de démonstration. Il peut être réexécuté sans remplacer les profils déjà modifiés.
 
-- `/stars` : fiches avec photos carrées, audiences par réseau, étoiles, prix IA/réel, recherche, catégories, tri et favoris locaux.
-- `/stars/:id` : biographie, langues, portfolio, audiences, tarifs, délais et avis de commandes livrées.
-- `/inscription` : inscription client ou star ; les stars doivent fournir leur profil social et leur autorisation.
-- `/connexion` : connexion ; session HttpOnly côté serveur.
-- `/mon-profil` : la star renseigne photo, biographie et audiences, puis soumet à nouveau son profil à validation. Elle peut retirer son autorisation IA pour les prochaines commandes.
-- `/dashboard` : uniquement les projets du client ou ceux attribués à la star connectée.
-- `/orders/:id` : brief, rendu vidéo, conversation persistante, révisions, validation et avis après livraison.
-- `/admin` : projets, confirmation des paiements, commissions, export CSV, tarifs par star et type de vidéo, validation des profils, dépôt du lien vidéo et livraison.
+Le fichier `supabase/migrations/202610080001_starcast.sql` contient le schéma seul ; `supabase/seed.sql` contient les profils fictifs. `supabase/setup.sql` rassemble les deux pour une installation simple.
 
-## Modèle de production et prix
+Si l’interface affiche « La base StarCast n’est pas initialisée », cette étape n’a pas encore été exécutée.
 
-**Vidéo IA** : StarCast crée et monte la vidéo ; la star autorise l’utilisation de son image et de sa voix. **Vidéo réelle** : tournage avec la star, organisé par StarCast, à un tarif strictement supérieur. Le choix est explicite avant la commande.
+## 2. Déployer via GitHub sur Vercel
 
-Les prix initiaux restent en euros, comme dans le projet fourni. Les tarifs et audiences des profils initiaux sont fictifs. L’administration fixe un tarif IA, un tarif réel et un pourcentage de commission par star. Les suppléments durée supérieure à 60 secondes (200 €) et voix off (80 €) sont conservés. Le serveur calcule le montant et fige la commission à la commande ; les futures modifications de tarifs ne changent pas les commandes existantes.
+1. Dans Vercel, importer **ifleh2002/ugcstar**.
+2. Framework : **Vite** ; commande build : `npm run build` ; dossier de sortie : `dist`.
+3. Déployer. Le fichier `vercel.json` permet d’ouvrir directement les pages `/stars`, `/connexion`, `/orders/...`, etc.
 
-Le net affiché est le montant après commission, pas une rémunération automatiquement virée à la star. Les frais de production, taxes et reversements restent à définir selon le modèle commercial.
+L’URL Supabase et la clé publishable fournie sont déjà configurées dans `src/lib/supabase.ts`. Elles sont publiques par conception : seules les autorisations RLS et les fonctions PostgreSQL donnent accès aux données. Vous pouvez les remplacer dans les variables d’environnement Vercel :
 
-## Validation et livraison
+```
+VITE_SUPABASE_URL=https://coghwghshcjaaqrtyvlh.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<votre clé publishable>
+```
 
-Brief reçu → paiement confirmé → production → rendu déposé en HTTPS → validation client → livraison admin. Le client peut demander deux cycles de révisions ; l’administration ne peut pas livrer avant sa validation. La star peut consulter ses projets et participer à la conversation ; seul le client valide son rendu.
+Ne jamais mettre une clé `service_role` ou `sb_secret_...` dans une variable `VITE_*`, un fichier frontend ou le dépôt.
 
-Les évaluations réelles sont réservées au client après livraison, une par commande. Elles remplacent les notes de démonstration dans la fiche dès qu’il existe un avis réel.
+## 3. Configurer les confirmations email
 
-## Ce qui reste à connecter
+Dans Supabase **Authentication → URL Configuration** :
 
-- **Génération IA** : aucun service vidéo IA ni aucune clé n’était fourni. Le workflow de production existe, mais aucune vidéo n’est générée automatiquement. L’équipe dépose un lien vidéo HTTPS. Ajouter un adaptateur serveur pour le fournisseur retenu, sa file de travaux et ses retours de traitement.
-- **Paiements** : suivi et confirmation manuelle, sans encaissement, remboursement bancaire ou virement automatique. Un prestataire et des webhooks vérifiés sont nécessaires.
-- **Contrats et Screenads** : modules initiaux conservés et signalés comme démonstration. Ils ne sont pas synchronisés avec les nouveaux projets. Aucune signature électronique réelle n’est intégrée.
-- **Mise en production** : proxy HTTPS avec `COOKIE_SECURE=true`, sauvegardes SQLite, stockage sécurisé des vidéos, contrôle des droits image/voix et accords contractuels, vérification email et récupération de mot de passe à ajouter.
+- **Site URL** : l’adresse de votre site Vercel.
+- **Redirect URLs** : ajouter `https://VOTRE-SITE.vercel.app/connexion` et, pour le développement, `http://localhost:8080/connexion`.
 
-Les photos initiales utilisent des liens externes ; elles nécessitent Internet. Les favoris restent dans le navigateur. Le lien de livraison ouvre la vidéo ; son téléchargement dépend des droits du stockage vidéo.
+Dans **Authentication → Providers**, activer Email. Lorsque la confirmation email est activée, l’inscription affiche un message invitant le client à confirmer son adresse avant sa connexion. Le lien de confirmation revient sur `/connexion`.
 
-## Vérification
+Configurer un service SMTP pour les envois de production. Les limites et réglages du service email Supabase restent ceux de votre projet.
 
-`npm run check` : TypeScript.
+## 4. Créer l’administrateur
 
-`npm run build` : compilation.
+1. S’inscrire normalement sur le site et confirmer son email.
+2. Exécuter cette requête dans le **SQL Editor Supabase**, en remplaçant l’adresse :
 
-`npm run test:api` : tests avec une base temporaire : inscription, absence de promotion admin, authentification, cloisonnement des projets, prix IA/réel calculés côté serveur, commissions figées, paiement requis, validation, révisions, livraison, messages, avis et autorisation IA.
+```sql
+update public.starcast_profiles p
+set role = 'admin'
+from auth.users u
+where p.id = u.id and lower(u.email) = lower('votre-email@example.com');
+```
 
-La base réelle est dans `data/starcast.sqlite`, exclue de l’archive et du dépôt. Les secrets et les sessions ne sont jamais stockés dans le code frontend. Un nouvel administrateur se crée uniquement par configuration serveur.
+3. Se déconnecter puis se reconnecter, et ouvrir `/admin`.
+
+Le rôle administrateur ne peut pas être choisi à l’inscription, modifié depuis le navigateur ou obtenu via les métadonnées d’un compte. Aucun mot de passe administrateur n’est stocké dans le dépôt.
+
+## Parcours
+
+- `/stars` : photos carrées, audience par réseau, notes, recherche, catégories, tri et favoris locaux.
+- `/stars/:id` : détail, tarifs IA/réel, portfolio et avis de commandes livrées.
+- `/inscription` : compte client ou star ; `/connexion` : connexion Supabase.
+- `/mon-profil` : photo, biographie, réseaux sociaux, consentement IA et soumission à validation.
+- `/dashboard` : uniquement les projets du client ou attribués à la star connectée.
+- `/orders/:id` : brief, rendu, conversation persistante, révisions, validation et avis.
+- `/admin` : projets, suivi manuel des paiements, commissions, export CSV, prix, validation des profils et livraison.
+
+Les sessions sont maintenant gérées par le SDK Supabase dans le navigateur, avec renouvellement automatique. L’ancien mécanisme de cookies du serveur SQLite a été remplacé.
+
+## Protection des données
+
+Tables dédiées : `starcast_profiles`, `starcast_stars`, `starcast_orders`, `starcast_messages`, `starcast_reviews`. Les comptes et mots de passe sont gérés par Supabase Auth.
+
+RLS est activé sur toutes les tables. Les visiteurs voient uniquement les stars publiées et les avis. Le client et la star n’accèdent qu’à leurs projets et messages. L’administration voit tous les projets.
+
+Les écritures directes sur les tables sont interdites à la clé publique et aux utilisateurs. Les changements passent par des fonctions PostgreSQL qui vérifient l’identité, les rôles et les étapes autorisées. Le prix est calculé depuis les tarifs de la base et la commission est figée à la commande. Les mises à jour du workflow verrouillent la ligne pour éviter les validations et révisions concurrentes.
+
+## Production des vidéos
+
+**IA** : produite par la plateforme avec l’image et la voix autorisées de la star. **Réelle** : tournée avec la star, à un tarif strictement supérieur. Les prix sont en euros comme dans le projet initial. Deux révisions sont incluses. Suppléments conservés : durée supérieure à 60 secondes (200 €), voix off (80 €).
+
+Brief → paiement confirmé manuellement → production → lien vidéo HTTPS déposé → validation client → livraison admin. Les avis sont possibles uniquement après livraison, un par commande.
+
+La génération IA automatique, le prestataire de paiement et les virements ne sont pas encore connectés. Les modules Contrats et Screenads initiaux restent des démonstrations. Les liens vidéo nécessitent un stockage vidéo externe ; aucun bucket public n’est créé automatiquement.
+
+## Développement et tests
+
+Node.js 24 ou supérieur :
+
+```bash
+npm ci
+npm run dev
+```
+
+Ouvrir `http://localhost:8080`. Aucun second serveur n’est nécessaire. L’authentification et les données utilisent le projet Supabase connecté.
+
+```bash
+npm run check
+npm run build
+npm run test:db
+```
+
+Les tests utilisent un PostgreSQL local embarqué (PGlite) avec un schéma Auth simulé, pas les comptes de votre projet réel. Ils vérifient la migration, sa réexécution, les règles RLS, l’interdiction de devenir admin depuis le navigateur, les tarifs, les commissions, les accès aux projets, les messages, les révisions, la validation, la livraison et les avis.
+
+Les données et comptes SQLite existants ne sont pas importés automatiquement : il faut un export de la base et une procédure dédiée. Les anciens mots de passe ne sont pas compatibles avec Supabase Auth ; les comptes doivent être recréés ou invités.

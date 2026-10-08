@@ -9,10 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node --env-file-if-exists=.env server/index.mjs",
-    "start": "node --env-file-if-exists=.env server/index.mjs",
+    "start": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit -p tsconfig.app.json",
-    "test:api": "node --test server/api.test.mjs"
+    "test:db": "node --test supabase/schema.test.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -93,6 +92,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.5.5",
