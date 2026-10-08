@@ -1,0 +1,7 @@
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+export type User={id:string;name:string;email:string;role:'client'|'star'|'admin'};
+export async function api<T=unknown>(path:string,body?:unknown,method?:string):Promise<T>{const r=await fetch('/api'+path,{credentials:'same-origin',method:method||(body?'POST':'GET'),headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});const data=await r.json();if(!r.ok)throw Error(data.error||'Erreur serveur');return data;}
+const Context=createContext<{user:User|null;loading:boolean;refresh:()=>Promise<void>}>({user:null,loading:true,refresh:async()=>{}});
+export function AuthProvider({children}:{children:ReactNode}){const [user,setUser]=useState<User|null>(null),[loading,setLoading]=useState(true);async function refresh(){try{setUser((await api<{user:User|null}>('/auth/me')).user);}finally{setLoading(false);}}useEffect(()=>{refresh().catch(()=>setLoading(false));},[]);return <Context.Provider value={{user,loading,refresh}}>{children}</Context.Provider>;}
+export const useAuth=()=>useContext(Context);
+export function useRemote<T>(path:string,initial:T){const [data,setData]=useState(initial),[error,setError]=useState('');async function refresh(){try{setData(await api<T>(path));setError('');}catch(e){setError((e as Error).message);}}useEffect(()=>{refresh();},[path]);return {data,error,refresh};}

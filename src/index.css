@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 33% 97%;
+    --foreground: 20 14% 10%;
+
+    --card: 36 33% 99%;
+    --card-foreground: 20 14% 10%;
+
+    --primary: 10 78% 54%;
+    --primary-foreground: 36 33% 98%;
+
+    --secondary: 20 14% 10%;
+    --secondary-foreground: 36 33% 98%;
+
+    --muted: 36 20% 93%;
+    --muted-foreground: 20 10% 38%;
+
+    --accent: 20 14% 15%;
+    --accent-foreground: 36 33% 98%;
+
+    --border: 20 10% 88%;
+    --input: 20 10% 90%;
+    --ring: 10 78% 54%;
+
+    --ivory: 36 33% 97%;
+    --ink: 20 14% 10%;
+
+    --radius: 0.25rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+    font-feature-settings: "ss01";
+  }
+
+  ::selection {
+    @apply bg-primary/90 text-primary-foreground;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:brightness-95 active:brightness-90;
+  }
+  .btn-dark {
+    @apply btn bg-secondary text-secondary-foreground hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-foreground hover:bg-muted;
+  }
+  .btn-outline {
+    @apply btn border border-border bg-transparent text-foreground hover:bg-muted;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground;
+  }
+  .input-base {
+    @apply w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring;
+  }
+  .label-base {
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+  }
+  .card-base {
+    @apply rounded-md border border-border bg-card;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
