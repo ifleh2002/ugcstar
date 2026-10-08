@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const heroImg="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&fit=crop";
+import SpotlightFrames from "@/components/hero/SpotlightFrames";
 const screenadsImg="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&fit=crop";
 import {useRemote} from "@/lib/api";
 import type {Creator} from "@/types";
@@ -13,7 +13,7 @@ export default function Landing() {
     <div>
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="container grid gap-10 py-16 md:grid-cols-12 md:py-24">
+        <div className="container grid gap-8 py-12 md:grid-cols-12 md:py-16">
           <div className="md:col-span-7 flex flex-col justify-center">
             <span className="label-base">N°001 — Plateforme UGC</span>
             <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl">
@@ -27,33 +27,38 @@ export default function Landing() {
               <Link to="/creators" className="btn-dark">Explorer les stars</Link>
               <Link to="/dashboard" className="btn-outline">Voir le workflow</Link>
             </div>
+          </div>
 
-            <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-border pt-8">
+          <div className="md:col-span-5 md:self-end">
+            <dl className="grid grid-cols-3 gap-4 rounded-md border border-border bg-card p-6">
               <div>
                 <dt className="label-base">Modes de production</dt>
-                <dd className="mt-2 font-display text-3xl font-semibold num">IA / Réel</dd>
+                <dd className="mt-2 font-display text-2xl font-semibold num">IA / Réel</dd>
               </div>
               <div>
                 <dt className="label-base">Révisions incluses</dt>
-                <dd className="mt-2 font-display text-3xl font-semibold num">2</dd>
+                <dd className="mt-2 font-display text-2xl font-semibold num">2</dd>
               </div>
               <div>
                 <dt className="label-base">Validation</dt>
-                <dd className="mt-2 font-display text-3xl font-semibold num">Client</dd>
+                <dd className="mt-2 font-display text-2xl font-semibold num">Client</dd>
               </div>
             </dl>
           </div>
 
-          <div className="md:col-span-5">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-md border border-border bg-muted">
-              <img src={heroImg} alt="Créatrice UGC en tournage" className="h-full w-full object-cover" />
-              <div className="absolute inset-x-4 bottom-4 flex items-center justify-between rounded-sm bg-background/95 px-4 py-3 backdrop-blur">
-                <div>
-                  <p className="label-base">Casting de démonstration</p>
-                  <p className="font-display text-sm font-semibold">Léa Marchand × Lumi</p>
-                </div>
-                <span className="pill bg-primary text-primary-foreground border-primary">✦ IA / Réel</span>
-              </div>
+          <div className="min-w-0 md:col-span-12">
+            <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
+              <SpotlightFrames
+                startIndex={3}
+                track={{ collapsedWidth: 64, expandedWidth: 400, gap: 6 }}
+                panel={{ height: 400, radius: 6, dim: 4 }}
+                selector={{ box: true, lines: true, lineLength: 80, thickness: 2, color: "#ee5833" }}
+                trigger="auto"
+              />
+            </div>
+            <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
+              <span>Portraits d’inspiration · Spotlight Frames</span>
+              <span>Survolez ou touchez un portrait pour l’agrandir · Navigation au clavier</span>
             </div>
           </div>
         </div>
