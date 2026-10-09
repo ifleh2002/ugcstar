@@ -13,7 +13,22 @@ export default function Landing() {
     <div>
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="container grid gap-8 py-12 md:grid-cols-12 md:py-16">
+        <div className="container grid gap-8 pb-12 md:grid-cols-12 md:pb-16">
+          <div className="min-w-0 md:col-span-12">
+            <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
+              <SpotlightFrames
+                startIndex={0}
+                track={{ collapsedWidth: 64, expandedWidth: 400, gap: 6 }}
+                panel={{ height: 400, radius: 6, dim: 4 }}
+                selector={{ box: true, lines: true, lineLength: 80, thickness: 2, color: "#ee5833" }}
+                trigger="auto"
+              />
+            </div>
+            <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
+              <span>Portraits d’inspiration · Spotlight Frames</span>
+              <span>Survolez ou touchez un portrait pour l’agrandir · Navigation au clavier</span>
+            </div>
+          </div>
           <div className="md:col-span-7 flex flex-col justify-center">
             <span className="label-base">N°001 — Plateforme UGC</span>
             <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl">
@@ -46,21 +61,7 @@ export default function Landing() {
             </dl>
           </div>
 
-          <div className="min-w-0 md:col-span-12">
-            <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
-              <SpotlightFrames
-                startIndex={0}
-                track={{ collapsedWidth: 64, expandedWidth: 400, gap: 6 }}
-                panel={{ height: 400, radius: 6, dim: 4 }}
-                selector={{ box: true, lines: true, lineLength: 80, thickness: 2, color: "#ee5833" }}
-                trigger="auto"
-              />
-            </div>
-            <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
-              <span>Portraits d’inspiration · Spotlight Frames</span>
-              <span>Survolez ou touchez un portrait pour l’agrandir · Navigation au clavier</span>
-            </div>
-          </div>
+
         </div>
       </section>
 
