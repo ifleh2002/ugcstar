@@ -49,7 +49,7 @@ export default function Landing() {
           <div className="min-w-0 md:col-span-12">
             <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
               <SpotlightFrames
-                startIndex={3}
+                startIndex={0}
                 track={{ collapsedWidth: 64, expandedWidth: 400, gap: 6 }}
                 panel={{ height: 400, radius: 6, dim: 4 }}
                 selector={{ box: true, lines: true, lineLength: 80, thickness: 2, color: "#ee5833" }}

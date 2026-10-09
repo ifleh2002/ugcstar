@@ -68,7 +68,7 @@ export interface SpotlightFramesProps {
 }
 
 const DEFAULT_IMAGES: SpotlightImage[] = [
-    {"image":"https://images.unsplash.com/photo-1654944989879-b3ef6a3f69a3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTE4fHxVc2VyJTIwcHJvZmlsZSUyMGltYWdlJTIwdmlicmFudHxlbnwwfDB8MHx8fDI%3D","offsetY":0},
+    {"image":"/star-1.png","offsetY":0},
     {"image":"https://images.unsplash.com/photo-1777146464379-c527ae8c92f0?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzQ1fHxVc2VyJTIwcHJvZmlsZSUyMGltYWdlJTIwdmlicmFudHxlbnwwfDB8MHx8fDI%3D","offsetY":0},
     {"image":"https://images.unsplash.com/photo-1600711151461-05abd927b281?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njg5fHxVc2VyJTIwcHJvZmlsZSUyMGltYWdlJTIwdmlicmFudHxlbnwwfDB8MHx8fDI%3D","offsetY":0},
     {"image":"https://images.unsplash.com/photo-1485178575877-1a13bf489dfe?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzEzfHxVc2VyJTIwcHJvZmlsZSUyMGltYWdlJTIwdmlicmFudHxlbnwwfDB8MHx8fDI%3D","offsetY":0},
