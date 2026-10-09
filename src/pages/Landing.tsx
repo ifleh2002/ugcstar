@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import SpotlightFrames from "@/components/hero/SpotlightFrames";
+import { lazy, Suspense } from "react";
+const ImageGrid = lazy(() => import("@/components/hero/ImageGrid"));
 const screenadsImg="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&fit=crop";
 import {useRemote} from "@/lib/api";
 import type {Creator} from "@/types";
@@ -16,17 +17,13 @@ export default function Landing() {
         <div className="container grid gap-8 pb-12 md:grid-cols-12 md:pb-16">
           <div className="min-w-0 md:col-span-12">
             <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
-              <SpotlightFrames
-                startIndex={0}
-                track={{ collapsedWidth: 64, expandedWidth: 400, gap: 6 }}
-                panel={{ height: 400, radius: 6, dim: 4 }}
-                selector={{ box: true, lines: true, lineLength: 80, thickness: 2, color: "#ee5833" }}
-                trigger="auto"
-              />
+              <Suspense fallback={<div className="h-full w-full bg-muted" />}>
+                <ImageGrid cell={103} cardSize={40} magnify={8} radius={240} drain={10} assemble />
+              </Suspense>
             </div>
             <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
-              <span>Portraits d’inspiration · Spotlight Frames</span>
-              <span>Survolez ou touchez un portrait pour l’agrandir · Navigation au clavier</span>
+              <span>Mosaïque d’inspiration · Image Grid</span>
+              <span>Survolez ou touchez la mosaïque pour agrandir les images</span>
             </div>
           </div>
           <div className="md:col-span-7 flex flex-col justify-center">
