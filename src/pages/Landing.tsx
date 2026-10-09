@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
-const ImageGrid = lazy(() => import("@/components/hero/ImageGrid"));
+const GravityGallery = lazy(() => import("@/components/hero/GravityGallery"));
 const screenadsImg="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&fit=crop";
 import {useRemote} from "@/lib/api";
 import type {Creator} from "@/types";
@@ -18,12 +18,12 @@ export default function Landing() {
           <div className="min-w-0 md:col-span-12">
             <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
               <Suspense fallback={<div className="h-full w-full bg-muted" />}>
-                <ImageGrid cell={103} cardSize={40} magnify={8} radius={240} drain={10} assemble />
+                <GravityGallery count={20} size={126} />
               </Suspense>
             </div>
             <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
-              <span>Mosaïque d’inspiration · Image Grid</span>
-              <span>Survolez ou touchez la mosaïque pour agrandir les images</span>
+              <span>Galerie interactive · Gravity Gallery</span>
+              <span>Attrapez et déplacez les photos à la souris ou au toucher</span>
             </div>
           </div>
           <div className="md:col-span-7 flex flex-col justify-center">
