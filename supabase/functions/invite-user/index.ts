@@ -5,7 +5,7 @@
 //   with role & username pre-filled in user_metadata, so the handle_new_user
 //   trigger provisions the correct user_profile on first login.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.51.0";
 import { corsHeaders } from "../_shared/cors.ts";
 
 const VALID_ROLES = ["admin", "collaborator", "user", "creator"] as const;
@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
     //    raw_app_meta_data when the account is created on first sign-in.
     const { data: invited, error: inviteError } =
       await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-        redirectTo: Deno.env.get("SITE_URL") ? `${Deno.env.get("SITE_URL")}/auth/activate` : undefined,
+        redirectTo: "https://ugcstar.vercel.app/auth/activate",
         data: {
           username,
           invited_by: caller.email,

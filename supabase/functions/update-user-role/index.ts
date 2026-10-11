@@ -6,7 +6,7 @@
 //   so the role propagates into the user's JWT on next token refresh.
 // - Syncs public.user_profiles.role in the same operation.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.51.0";
 import { corsHeaders } from "../_shared/cors.ts";
 
 const VALID_ROLES = ["admin", "collaborator", "user", "creator"] as const;
