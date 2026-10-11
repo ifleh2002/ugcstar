@@ -1,59 +1,52 @@
 import { Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
 const GravityGallery = lazy(() => import("@/components/hero/GravityGallery"));
-const screenadsImg="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&fit=crop";
-import {useRemote} from "@/lib/api";
-import type {Creator} from "@/types";
+const screenadsImg = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&fit=crop";
+import { CREATORS } from "@/lib/mockData";
 import { formatCompact } from "@/lib/utils";
 
 export default function Landing() {
-  const {data:creators}=useRemote<Creator[]>("/stars",[]);
-  const featured = creators.slice(0, 4);
+  const featured = CREATORS.slice(0, 4);
 
   return (
     <div>
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="container grid gap-8 pb-12 md:grid-cols-12 md:pb-16">
+        <div className="container grid gap-10 pb-16 md:grid-cols-12 md:pb-24">
           <div className="min-w-0 md:col-span-12">
             <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
-              <Suspense fallback={<div className="h-full w-full bg-muted" />}>
+              <Suspense fallback={<div className="h-full bg-muted" />}>
                 <GravityGallery count={20} size={126} />
               </Suspense>
             </div>
-            <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
-              <span>Galerie interactive · Gravity Gallery</span>
-              <span>Attrapez et déplacez les photos à la souris ou au toucher</span>
-            </div>
+            <p className="mt-3 text-xs text-muted-foreground">Gravity Gallery · Attrapez et déplacez les photos à la souris ou au toucher.</p>
           </div>
           <div className="md:col-span-7 flex flex-col justify-center">
             <span className="label-base">N°001 — Plateforme UGC</span>
             <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl">
-              Votre star. Votre marque. <em className="not-italic text-primary">Notre création IA.</em>
+              Les meilleurs créateurs, <em className="not-italic text-primary">en production</em>, dans la minute.
             </h1>
             <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
-              StarCast crée vos vidéos publicitaires avec l’IA et l’image autorisée des stars. Choisissez aussi une vidéo réelle, tournée avec la star à un tarif supérieur.
-              Chaque rendu est validé par le client avant sa livraison.
+              StarCast relie marques et créateurs/stars pour produire des vidéos UGC et publicitaires signées,
+              validées et diffusées sur votre réseau d'écrans Screenads.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/creators" className="btn-dark">Explorer les stars</Link>
+              <Link to="/creators" className="btn-dark">Explorer les créateurs</Link>
               <Link to="/dashboard" className="btn-outline">Voir le workflow</Link>
             </div>
-          </div>
 
-          <div className="md:col-span-5 md:self-end">
-            <dl className="grid grid-cols-3 gap-4 rounded-md border border-border bg-card p-6">
+            <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-border pt-8">
               <div>
-                <dt className="label-base">Modes de production</dt>
-                <dd className="mt-2 font-display text-2xl font-semibold num">IA / Réel</dd>
+                <dt className="label-base">Créateurs vérifiés</dt>
+                <dd className="mt-2 font-display text-3xl font-semibold num">1 284</dd>
               </div>
               <div>
-                <dt className="label-base">Révisions incluses</dt>
-                <dd className="mt-2 font-display text-2xl font-semibold num">2</dd>
+                <dt className="label-base">Vidéos livrées</dt>
+                <dd className="mt-2 font-display text-3xl font-semibold num">37.6k</dd>
               </div>
               <div>
-                <dt className="label-base">Validation</dt>
-                <dd className="mt-2 font-display text-2xl font-semibold num">Client</dd>
+                <dt className="label-base">Écrans connectés</dt>
+                <dd className="mt-2 font-display text-3xl font-semibold num">892</dd>
               </div>
             </dl>
           </div>
@@ -85,10 +78,10 @@ export default function Landing() {
             <div className="max-w-2xl">
               <span className="label-base">N°002 — Casting</span>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
-                Stars en vedette
+                Créateurs en vedette cette semaine
               </h2>
             </div>
-            <Link to="/creators" className="btn-ghost self-start md:self-end">Voir toutes les stars →</Link>
+            <Link to="/creators" className="btn-ghost self-start md:self-end">Voir tous les créateurs →</Link>
           </div>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -133,10 +126,10 @@ export default function Landing() {
           </div>
           <ol className="mt-12 grid gap-6 md:grid-cols-4">
             {[
-              { n: "01", t: "Brief détaillé", d: "Choisissez la star, le mode IA ou réel, puis votre style, durée et message." },
+              { n: "01", t: "Brief détaillé", d: "Style, durée, voix off, référence. Chaque champ dicte la production." },
               { n: "02", t: "Messagerie tripartite", d: "Client, star et plateforme sur un fil unique, traçable." },
-              { n: "03", t: "Validation signée", d: "Rendu validé par le client avant sa livraison finale." },
-              { n: "04", t: "Livraison finale", d: "L’administration partage votre vidéo prête à être utilisée." },
+              { n: "03", t: "Validation signée", d: "Rendu approuvé, contrat PDF signé électroniquement." },
+              { n: "04", t: "Diffusion Screenads", d: "Programmation sur écrans synchronisés en quelques clics." },
             ].map((s) => (
               <li key={s.n} className="card-base p-6">
                 <span className="font-display text-5xl font-semibold text-primary num">{s.n}</span>
@@ -158,7 +151,7 @@ export default function Landing() {
             </h2>
             <p className="mt-6 max-w-xl text-base text-secondary-foreground/80">
               Composez des playlists, planifiez des créneaux horaires, surveillez l'état de chaque terminal.
-              Le module Screenads fourni dans le projet est une simulation de gestion des écrans.
+              Les vidéos UGC validées se diffusent instantanément, en synchronisation parfaite.
             </p>
             <div className="mt-8 flex gap-3">
               <Link to="/screenads" className="btn-primary">Ouvrir Screenads</Link>

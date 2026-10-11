@@ -1,49 +1,81 @@
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Landing from "@/pages/Landing";
-import Creators from "@/pages/Stars";
+import Creators from "@/pages/Creators";
 import CreatorDetail from "@/pages/CreatorDetail";
 import OrderNew from "@/pages/OrderNew";
 import Dashboard from "@/pages/Dashboard";
-import OrderDetail from "@/pages/ProjectDetail";
-import Auth from "@/pages/Auth";
-import Admin from "@/pages/Admin";
-import StarProfile from "@/pages/StarProfile";
-import {AuthProvider,useAuth} from "@/lib/api";
-import type {ReactNode} from "react";
-function Protected({children,admin=false}:{children:ReactNode;admin?:boolean}) {const {user,loading,error}=useAuth(); const location=useLocation();if(loading)return <p className="container py-12">Chargement…</p>;if(error)return <p role="alert" className="container py-12">{error}</p>;if(!user)return <Navigate to={"/connexion?next="+encodeURIComponent(location.pathname)} replace/>;if(admin&&user.role!=="admin")return <p role="alert" className="container py-12">Cet espace est réservé à l’administration.</p>;return <>{children}</>;}
+import OrderDetail from "@/pages/OrderDetail";
 import Screenads from "@/pages/Screenads";
 import Contracts from "@/pages/Contracts";
+import ContractAnalytics from "@/pages/ContractAnalytics";
+import Activate from "@/pages/auth/Activate";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
 import NotFound from "@/pages/NotFound";
 
 export default function App() {
   return (
-    <BrowserRouter><AuthProvider>
-      <div className="flex min-h-full flex-col bg-background">
-        <Navbar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/stars" element={<Creators />} />
-            <Route path="/stars/:id" element={<CreatorDetail />} />
-            <Route path="/stars/:id/order" element={<OrderNew />} />
-            <Route path="/connexion" element={<Auth />} />
-            <Route path="/inscription" element={<Auth register />} />
-            <Route path="/mon-profil" element={<Protected><StarProfile /></Protected>} />
-            <Route path="/admin" element={<Protected admin><Admin /></Protected>} />
-            <Route path="/" element={<Landing />} />
-            <Route path="/creators" element={<Creators />} />
-            <Route path="/creators/:id" element={<CreatorDetail />} />
-            <Route path="/creators/:id/order" element={<OrderNew />} />
-            <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
-            <Route path="/orders/:id" element={<Protected><OrderDetail /></Protected>} />
-            <Route path="/screenads" element={<Protected admin><Screenads /></Protected>} />
-            <Route path="/contracts" element={<Protected admin><Contracts /></Protected>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </AuthProvider></BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="flex min-h-full flex-col bg-background">
+          <Navbar />
+          <main className="flex-1">
+            <p className="border-b border-border bg-muted px-4 py-2 text-center text-xs text-muted-foreground">Démonstration : stars, commandes, messages et revenus sont fictifs. Les comptes utilisent le backend configuré.</p>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/creators" element={<Creators />} />
+              <Route path="/creators/:id" element={<CreatorDetail />} />
+              <Route
+                path="/creators/:id/order"
+                element={
+                  <ProtectedRoute>
+                    <OrderNew />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders/:id"
+                element={
+                  <ProtectedRoute>
+                    <OrderDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/screenads" element={<ProtectedRoute roles={["admin", "collaborator"]}><Screenads /></ProtectedRoute>} />
+              <Route path="/contracts" element={<ProtectedRoute><Contracts /></ProtectedRoute>} />
+              <Route path="/contracts/analytics" element={<ProtectedRoute roles={["admin", "collaborator"]}><ContractAnalytics /></ProtectedRoute>} />
+              <Route path="/auth/activate" element={<Activate />} />
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/register" element={<Register />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+          <Toaster richColors position="top-right" />
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

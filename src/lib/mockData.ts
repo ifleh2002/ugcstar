@@ -238,10 +238,10 @@ export const MESSAGES: Message[] = [
 ];
 
 export const CONTRACTS: Contract[] = [
-  { id: "ct-301", orderId: "o-1022", brand: "DairyCo", creatorName: "Tomás Rivera", amount: 1250, issuedAt: "2026-09-16T09:00:00Z", status: "signe", signedBy: ["DairyCo", "Tomás Rivera", "StarCast"] },
-  { id: "ct-302", orderId: "o-1023", brand: "NovaTech", creatorName: "Yacine Berkane", amount: 1450, issuedAt: "2026-10-01T15:00:00Z", status: "signe", signedBy: ["NovaTech", "Yacine Berkane"] },
-  { id: "ct-303", orderId: "o-1024", brand: "Lumi Cosmetics", creatorName: "Léa Marchand", amount: 850, issuedAt: "2026-09-28T10:00:00Z", status: "signe", signedBy: ["Lumi Cosmetics", "Léa Marchand", "StarCast"] },
-  { id: "ct-304", orderId: "o-1021", brand: "Épicerie Barjac", creatorName: "Chloé Vidal", amount: 620, issuedAt: "2026-10-05T17:00:00Z", status: "en_attente", signedBy: ["Épicerie Barjac"] },
+  { id: "ct-301", orderId: "o-1022", brand: "DairyCo", creatorName: "Tomás Rivera", amount: 1250, issuedAt: "2026-09-16T09:00:00Z", status: "signe", signedBy: ["DairyCo", "Tomás Rivera", "StarCast"], templateId: "ugc-standard" },
+  { id: "ct-302", orderId: "o-1023", brand: "NovaTech", creatorName: "Yacine Berkane", amount: 1450, issuedAt: "2026-10-01T15:00:00Z", status: "signe", signedBy: ["NovaTech", "Yacine Berkane"], templateId: "exclusivity" },
+  { id: "ct-303", orderId: "o-1024", brand: "Lumi Cosmetics", creatorName: "Léa Marchand", amount: 850, issuedAt: "2026-09-28T10:00:00Z", status: "signe", signedBy: ["Lumi Cosmetics", "Léa Marchand", "StarCast"], templateId: "ugc-standard" },
+  { id: "ct-304", orderId: "o-1021", brand: "Épicerie Barjac", creatorName: "Chloé Vidal", amount: 620, issuedAt: "2026-10-05T17:00:00Z", status: "en_attente", signedBy: ["Épicerie Barjac"], templateId: "long-format" },
 ];
 
 export const SCREENS: Screen[] = [

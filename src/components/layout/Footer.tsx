@@ -6,14 +6,14 @@ export default function Footer() {
           <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-secondary text-primary">★</div>
           <div>
             <p className="font-display text-base font-semibold">StarCast</p>
-            <p className="text-xs text-muted-foreground">Vidéos IA par la plateforme • Tournages réels</p>
+            <p className="text-xs text-muted-foreground">Créateurs UGC • Workflow signé • Diffusion Screenads</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
           <span>© 2026 StarCast Studios</span>
-          <a className="hover:text-foreground" href="/stars">Explorer les stars</a>
-          <a className="hover:text-foreground" href="/inscription?role=star">Devenir star</a>
-          
+          <a className="hover:text-foreground" href="#">Conditions</a>
+          <a className="hover:text-foreground" href="#">Confidentialité</a>
+          <a className="hover:text-foreground" href="#">contact@starcast.io</a>
         </div>
       </div>
     </footer>

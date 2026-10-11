@@ -5,6 +5,8 @@ import type { Message } from "@/types";
 import { cn, formatDate, formatPrice, formatTime } from "@/lib/utils";
 import { toast } from "sonner";
 import NotFound from "@/pages/NotFound";
+import { useReadOnly } from "@/hooks/useReadOnly";
+import ReadOnlyBanner from "@/components/auth/ReadOnlyBanner";
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -12,6 +14,7 @@ export default function OrderDetail() {
   const [messages, setMessages] = useState<Message[]>(() => MESSAGES.filter((m) => m.orderId === id));
   const [draft, setDraft] = useState("");
   const [decision, setDecision] = useState<"idle" | "approved" | "revision">("idle");
+  const isReadOnly = useReadOnly();
 
   if (!order) return <NotFound />;
   const creator = CREATORS.find((c) => c.id === order.creatorId)!;
@@ -34,11 +37,11 @@ export default function OrderDetail() {
 
   const approve = () => {
     setDecision("approved");
-    toast.success("Rendu approuvé. Contrat archivé, diffusion Screenads prête à être programmée.");
+    toast.success("Simulation : rendu approuvé sur cette page, sans envoi ni archivage serveur.");
   };
   const requestRevision = () => {
     setDecision("revision");
-    toast.info("Demande de révision envoyée. Il reste 1 cycle de révision.");
+    toast.info("Simulation de révision : aucune demande n’a été envoyée.");
   };
 
   return (
@@ -64,6 +67,11 @@ export default function OrderDetail() {
           <span className="font-display text-3xl font-semibold num">{formatPrice(order.budget)}</span>
         </div>
       </div>
+
+      <ReadOnlyBanner
+        className="mt-6"
+        message="Vous consultez le détail de la commande. L'approbation du rendu, les demandes de révision et l'envoi de messages sont désactivés."
+      />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
         {/* Left: Render + Messages */}
@@ -95,12 +103,18 @@ export default function OrderDetail() {
                   <div className="text-sm text-muted-foreground">
                     V{order.revisionsUsed + 1} — déposée le {formatDate(order.createdAt)}
                   </div>
-                  <div className="flex gap-3">
-                    <button onClick={requestRevision} disabled={decision !== "idle"} className="btn-outline">Demander une révision</button>
-                    <button onClick={approve} disabled={decision !== "idle"} className="btn-primary">
-                      {decision === "approved" ? "✓ Approuvé" : "Approuver le rendu"}
-                    </button>
-                  </div>
+                  {isReadOnly ? (
+                    <span className="rounded-sm bg-amber-50 px-3 py-1.5 text-[11px] italic text-amber-800">
+                      ⊘ Validation réservée à l'équipe plateforme
+                    </span>
+                  ) : (
+                    <div className="flex gap-3">
+                      <button onClick={requestRevision} disabled={decision !== "idle"} className="btn-outline">Demander une révision</button>
+                      <button onClick={approve} disabled={decision !== "idle"} className="btn-primary">
+                        {decision === "approved" ? "✓ Approuvé" : "Approuver le rendu"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -144,16 +158,25 @@ export default function OrderDetail() {
               ))}
             </div>
 
-            <div className="mt-4 flex items-end gap-3">
-              <textarea
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                placeholder="Écrire un message à l'équipe…"
-                rows={2}
-                className="input-base resize-none"
-              />
-              <button onClick={send} className="btn-dark h-fit">Envoyer</button>
-            </div>
+            {isReadOnly ? (
+              <div className="mt-4 flex items-center gap-3 rounded-sm border border-dashed border-amber-500/30 bg-amber-50/60 px-4 py-3 text-xs text-amber-900">
+                <span className="font-display text-base">⊘</span>
+                <span>
+                  Envoi de message désactivé — compte en lecture seule. Vous consultez normalement les échanges tripartites.
+                </span>
+              </div>
+            ) : (
+              <div className="mt-4 flex items-end gap-3">
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Écrire un message à l'équipe…"
+                  rows={2}
+                  className="input-base resize-none"
+                />
+                <button onClick={send} className="btn-dark h-fit">Envoyer</button>
+              </div>
+            )}
           </section>
         </div>
 

@@ -9,9 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite preview --host 0.0.0.0",
-    "check": "tsc --noEmit -p tsconfig.app.json",
-    "test:db": "node --test supabase/schema.test.mjs"
+    "check": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -93,7 +91,6 @@
     "matter-js": "^0.20.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.8",
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.5.5",
@@ -111,8 +108,5 @@
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
     "@types/matter-js": "^0.20.2"
-  },
-  "engines": {
-    "node": ">=24"
   }
 }

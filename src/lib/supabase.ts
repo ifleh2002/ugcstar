@@ -1,9 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-// A publishable key is deliberately public. Authorization is enforced by RLS
-// and PostgreSQL functions, never by trusting a role sent from the browser.
-export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || 'https://coghwghshcjaaqrtyvlh.supabase.co',
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_wdUttDFRmzJzrFziI9rUzg_4fQCyXK7',
-  { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } },
-);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error("[Supabase] Variables d'environnement manquantes.");
+}
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    flowType: "pkce",
+  },
+});

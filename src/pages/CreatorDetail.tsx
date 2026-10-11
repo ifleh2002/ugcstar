@@ -1,15 +1,14 @@
 import { Link, useParams } from "react-router-dom";
-import { useRemote } from "@/lib/api";
-import type {Creator} from "@/types";
+import { CREATORS } from "@/lib/mockData";
 import { formatCompact, formatPrice } from "@/lib/utils";
 import NotFound from "@/pages/NotFound";
+import { useReadOnly } from "@/hooks/useReadOnly";
 
 export default function CreatorDetail() {
   const { id } = useParams();
-  const {data:CREATORS,error}=useRemote<Creator[]>("/stars",[]);
-  const {data:reviews}=useRemote<{id:string;creatorId:string;name:string;rating:number;content:string}[]>("/reviews",[]);
   const creator = CREATORS.find((c) => c.id === id);
-  if (!creator) return CREATORS.length ? <NotFound /> : <p className="container py-10">{error || "Chargement du profil…"}</p>;
+  const isReadOnly = useReadOnly();
+  if (!creator) return <NotFound />;
 
   return (
     <div>
@@ -19,7 +18,7 @@ export default function CreatorDetail() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
       </div>
 
-      <div className="container relative -mt-24 pb-16">
+      <div className="container -mt-24 pb-16">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div className="flex items-end gap-5">
             <img
@@ -37,7 +36,13 @@ export default function CreatorDetail() {
           </div>
           <div className="flex gap-3">
             <Link to="/creators" className="btn-outline">← Retour</Link>
-            <Link to={`/creators/${creator.id}/order`} className="btn-primary">Commander une vidéo</Link>
+            {isReadOnly ? (
+              <span className="pill border-amber-500/40 bg-amber-50 text-amber-800">
+                ⊘ Consultation
+              </span>
+            ) : (
+              <Link to={`/creators/${creator.id}/order`} className="btn-primary">Commander une vidéo</Link>
+            )}
           </div>
         </div>
 
@@ -52,7 +57,6 @@ export default function CreatorDetail() {
               {creator.languages.map((l) => <span key={l} className="pill">{l}</span>)}
             </div>
 
-            <section className="mt-8 card-base p-6"><h2 className="text-xl">Réseaux sociaux & avis</h2><p className="mt-3">{creator.socials?.map(s=>s.network+' : '+formatCompact(s.followers)+' abonnés').join(' · ')||'Statistiques en cours de vérification'}</p><p className="mt-3 text-primary">{'★'.repeat(Math.round(creator.rating))} {creator.rating}/5 · {creator.reviews} avis {creator.demo?'de démonstration':''}</p><p className="mt-3 text-xs text-muted-foreground">Droits d’image et de voix validés avant production. Les statistiques initiales sont fictives.</p><h3 className="text-lg mt-6">Avis de clients après livraison</h3>{reviews.filter(r=>r.creatorId===creator.id).map(r=><div key={r.id} className="border-t mt-3 pt-3"><strong>{r.name} · {r.rating}/5</strong><p className="text-sm mt-2">{r.content}</p></div>)}{!reviews.some(r=>r.creatorId===creator.id)&&<p className="text-sm text-muted-foreground mt-3">Aucun avis de commande livrée pour le moment.</p>}</section>
             {/* Portfolio */}
             <section className="mt-14">
               <div className="flex items-end justify-between">
@@ -93,13 +97,18 @@ export default function CreatorDetail() {
           {/* Stats sidebar */}
           <aside className="h-fit space-y-4 lg:sticky lg:top-24">
             <div className="card-base p-6">
-              <p className="label-base">Vidéo IA · plateforme</p>
-              <p className="mt-2 font-display text-4xl font-semibold num">{formatPrice(creator.aiPrice||creator.pricePerVideo)}</p>
+              <p className="label-base">Tarif de base</p>
+              <p className="mt-2 font-display text-4xl font-semibold num">{formatPrice(creator.pricePerVideo)}</p>
               <p className="mt-1 text-xs text-muted-foreground">par vidéo · 2 révisions incluses</p>
-              <p className="mt-3 text-sm">Vidéo réelle : <strong>{formatPrice(creator.realPrice||creator.pricePerVideo*2)}</strong></p><p className="mt-2 text-xs text-muted-foreground">L’IA est produite par StarCast. Le réel nécessite un tournage avec la star.</p>
-              <Link to={`/creators/${creator.id}/order`} className="btn-primary mt-5 w-full">
-                Démarrer une commande
-              </Link>
+              {isReadOnly ? (
+                <div className="mt-5 rounded-sm border border-dashed border-amber-500/40 bg-amber-50/50 p-3 text-center text-[11px] leading-snug text-amber-900">
+                  ⊘ Commande indisponible — accès en consultation
+                </div>
+              ) : (
+                <Link to={`/creators/${creator.id}/order`} className="btn-primary mt-5 w-full">
+                  Démarrer une commande
+                </Link>
+              )}
             </div>
             <div className="card-base divide-y divide-border">
               {[

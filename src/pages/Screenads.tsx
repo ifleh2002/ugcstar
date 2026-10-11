@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { PLAYLISTS, SCHEDULE, SCREENS } from "@/lib/mockData";
 import { cn, formatTime } from "@/lib/utils";
+import { useReadOnly } from "@/hooks/useReadOnly";
+import ReadOnlyBanner from "@/components/auth/ReadOnlyBanner";
 
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"] as const;
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
@@ -8,6 +10,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 export default function Screenads() {
   const [selectedPlaylist, setSelectedPlaylist] = useState(PLAYLISTS[0].id);
   const playlist = PLAYLISTS.find((p) => p.id === selectedPlaylist)!;
+  const isReadOnly = useReadOnly();
   const stats = useMemo(() => ({
     online: SCREENS.filter((s) => s.status === "online").length,
     syncing: SCREENS.filter((s) => s.status === "syncing").length,
@@ -15,7 +18,7 @@ export default function Screenads() {
   }), []);
 
   return (
-    <div className="container py-10 md:py-14"><p className="card-base p-4 mb-6 text-sm">Module de démonstration conservé du projet initial : données fictives, sans connexion aux nouveaux projets.</p>
+    <div className="container py-10 md:py-14">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <span className="label-base">Diffusion</span>
@@ -28,10 +31,23 @@ export default function Screenads() {
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="btn-outline">Nouveau playlist</button>
-          <button className="btn-primary">Pousser sync</button>
+          {isReadOnly ? (
+            <span className="pill border-amber-500/40 bg-amber-50 text-amber-800">
+              ⊘ Diffusion en consultation
+            </span>
+          ) : (
+            <>
+              <button className="btn-outline">Nouveau playlist</button>
+              <button className="btn-primary">Pousser sync</button>
+            </>
+          )}
         </div>
       </div>
+
+      <ReadOnlyBanner
+        className="mt-6"
+        message="Vous consultez l'état du réseau Screenads et le planning hebdomadaire. La composition de playlists et la synchronisation sont réservées aux opérateurs plateforme."
+      />
 
       {/* Fleet stats */}
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -86,7 +102,7 @@ export default function Screenads() {
                     <p className="text-xs text-muted-foreground">{it.creator}</p>
                   </div>
                   <span className="pill num">{it.duration}s</span>
-                  <button className="btn-ghost text-xs">Retirer</button>
+                  {!isReadOnly && <button className="btn-ghost text-xs">Retirer</button>}
                 </li>
               ))}
             </ol>

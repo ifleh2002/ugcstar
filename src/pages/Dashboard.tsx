@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import {useRemote} from "@/lib/api";
-import type {Order, Creator} from "@/types";
+import { CREATORS, ORDERS } from "@/lib/mockData";
 import type { OrderStatus } from "@/types";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
+import { useReadOnly } from "@/hooks/useReadOnly";
+import ReadOnlyBanner from "@/components/auth/ReadOnlyBanner";
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
   briefing: "Briefing",
@@ -23,13 +24,12 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
 };
 
 export default function Dashboard() {
-  const {data:ORDERS,error}=useRemote<Order[]>("/orders",[]);
-  const {data:CREATORS}=useRemote<Creator[]>("/stars",[]);
   const [filter, setFilter] = useState<"all" | OrderStatus>("all");
+  const isReadOnly = useReadOnly();
 
   const orders = useMemo(
     () => (filter === "all" ? ORDERS : ORDERS.filter((o) => o.status === filter)),
-    [filter, ORDERS]
+    [filter]
   );
 
   const stats = {
@@ -51,10 +51,20 @@ export default function Dashboard() {
             Suivez chaque étape : briefing, production, validation du rendu, livraison.
           </p>
         </div>
-        <Link to="/creators" className="btn-primary">+ Nouvelle commande</Link>
+        {isReadOnly ? (
+          <span className="pill border-amber-500/40 bg-amber-50 text-amber-800">
+            ⊘ Mode consultation
+          </span>
+        ) : (
+          <Link to="/creators" className="btn-primary">+ Nouvelle commande</Link>
+        )}
       </div>
 
-      {error && <p role="alert" className="text-red-700">{error}</p>}
+      <ReadOnlyBanner
+        className="mt-6"
+        message="Vous consultez le workflow de vos commandes. L'émission de nouvelles commandes est réservée à l'équipe plateforme StarCast."
+      />
+
       {/* Stats */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
@@ -89,7 +99,7 @@ export default function Dashboard() {
       {/* Orders list */}
       <div className="mt-6 space-y-3">
         {orders.map((o) => {
-          const creator = CREATORS.find((c) => c.id === o.creatorId);
+          const creator = CREATORS.find((c) => c.id === o.creatorId)!;
           return (
             <Link
               key={o.id}
@@ -97,9 +107,9 @@ export default function Dashboard() {
               className="card-base flex flex-col gap-4 p-5 transition-shadow hover:shadow-md md:flex-row md:items-center md:gap-6"
             >
               <div className="flex items-center gap-4 md:w-72">
-                <img src={creator?.avatar || "/placeholder.svg"} alt="" className="h-12 w-12 rounded-full object-cover" />
+                <img src={creator.avatar} alt="" className="h-12 w-12 rounded-full object-cover" />
                 <div>
-                  <p className="font-display text-base font-semibold">{creator?.name || "Star"}</p>
+                  <p className="font-display text-base font-semibold">{creator.name}</p>
                   <p className="text-xs text-muted-foreground num">#{o.id} · {formatDate(o.createdAt)}</p>
                 </div>
               </div>
@@ -107,7 +117,7 @@ export default function Dashboard() {
               <div className="flex-1 min-w-0">
                 <p className="font-display text-base font-semibold line-clamp-1">{o.brand} — {o.product}</p>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                  <span>{o.videoType === "real" ? "Vidéo réelle" : "Vidéo IA · plateforme"} · Style · <strong className="text-foreground">{o.style}</strong></span>
+                  <span>Style · <strong className="text-foreground">{o.style}</strong></span>
                   <span>Durée · <strong className="text-foreground num">{o.duration}s</strong></span>
                   <span>Révisions · <strong className="text-foreground num">{o.revisionsUsed}/{o.revisionsAllowed}</strong></span>
                   <span>Livraison · <strong className="text-foreground">{formatDate(o.dueDate)}</strong></span>

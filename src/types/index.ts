@@ -3,10 +3,10 @@ export type VideoStyle = "Testimonial" | "Unboxing" | "Tutorial" | "Narrative" |
 export type Visibility = "public" | "private";
 export type OrderStatus = "briefing" | "en_production" | "en_validation" | "validee" | "rejetee" | "livree";
 export type ContractStatus = "en_attente" | "signe" | "annule";
+export type ContractTemplateId = "ugc-standard" | "exclusivity" | "long-format";
 export type MessageAuthor = "client" | "star" | "plateforme";
 
 export interface Creator {
-  aiPrice?: number; realPrice?: number; commissionRate?: number; approved?: boolean; aiConsent?: boolean; demo?: boolean; socials?: {network:string;followers:number}[];
   id: string;
   name: string;
   handle: string;
@@ -39,7 +39,6 @@ export interface PortfolioItem {
 }
 
 export interface Order {
-  userId?: string; videoType?: "ai" | "real"; paymentStatus?: "pending" | "paid" | "refunded"; commission?: number; commissionRate?: number;
   id: string;
   creatorId: string;
   brand: string;
@@ -56,6 +55,7 @@ export interface Order {
   renderThumbnail?: string;
   revisionsUsed: number;
   revisionsAllowed: number;
+  templateId?: ContractTemplateId;
 }
 
 export interface Message {
@@ -76,6 +76,7 @@ export interface Contract {
   issuedAt: string;
   status: ContractStatus;
   signedBy: string[];
+  templateId?: ContractTemplateId;
 }
 
 export interface Screen {
