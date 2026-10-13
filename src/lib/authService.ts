@@ -25,7 +25,7 @@ export const authService = {
   async sendOtp(email: string, role: UserRole, username: string) {
     if (!["user", "creator"].includes(role)) throw new Error("Inscription réservée aux marques et créateurs.");
     const { error } = await supabase.auth.signInWithOtp({
-      email,
+      email: email.trim().toLowerCase(),
       options: {
         shouldCreateUser: true,
         emailRedirectTo: "https://ugcstar.vercel.app/auth/activate",
@@ -45,11 +45,14 @@ export const authService = {
     if (!["user", "creator"].includes(role)) throw new Error("Rôle interdit.");
     if (password.length < 10) throw new Error("Mot de passe de 10 caractères minimum.");
     const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
-      email,
-      token,
+      email: email.trim().toLowerCase(),
+      token: token.replace(/\s/g, ""),
       type: "email",
     });
-    if (verifyError) throw verifyError;
+    if (verifyError) {
+      if (verifyError.code === "otp_expired") throw new Error("Code refusé ou expiré. Demandez un nouveau code et saisissez celui du dernier email reçu, sans réutiliser un ancien code.");
+      throw verifyError;
+    }
     if (!verifyData.user) throw new Error("Vérification impossible.");
 
     const { data: updated, error: updateError } = await supabase.auth.updateUser({

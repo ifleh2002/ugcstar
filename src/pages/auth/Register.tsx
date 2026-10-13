@@ -12,8 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const ROLES: UserRole[] = ["user", "creator"];
-const configuredOtpLength = Number(import.meta.env.VITE_AUTH_OTP_LENGTH || 6);
-const OTP_LENGTH = Number.isInteger(configuredOtpLength) && configuredOtpLength >= 6 && configuredOtpLength <= 10 ? configuredOtpLength : 6;
 
 export default function Register() {
   const nav = useNavigate();
@@ -23,7 +21,8 @@ export default function Register() {
   const [role, setRole] = useState<UserRole>(searchParams.get("role") === "creator" ? "creator" : "user");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
+  const [otp, setOtp] = useState("");
+  const [resending, setResending] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -42,7 +41,7 @@ export default function Register() {
     try {
       await authService.sendOtp(email.trim(), role, username.trim());
       toast.success(`Code envoyé à ${email}.`, {
-        description: `Vérifiez votre boîte mail (code à ${OTP_LENGTH} chiffres).`,
+        description: "Utilisez le code du dernier email reçu.",
       });
       setStep(2);
     } catch (err) {
@@ -53,36 +52,12 @@ export default function Register() {
     }
   };
 
-  const handleOtpChange = (idx: number, value: string) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const next = [...otp];
-    next[idx] = digit;
-    setOtp(next);
-    if (digit && idx < OTP_LENGTH - 1) {
-      document.getElementById(`otp-${idx + 1}`)?.focus();
-    }
-  };
-
-  const handleOtpKey = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[idx] && idx > 0) {
-      document.getElementById(`otp-${idx - 1}`)?.focus();
-    }
-  };
-
-  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
-    if (pasted.length === OTP_LENGTH) {
-      e.preventDefault();
-      setOtp(pasted.split(""));
-      document.getElementById(`otp-${OTP_LENGTH - 1}`)?.focus();
-    }
-  };
-
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const code = otp.join("");
-    if (code.length !== OTP_LENGTH) {
-      toast.error(`Entrez le code à ${OTP_LENGTH} chiffres.`);
+    if (submitting || resending) return;
+    const code = otp.trim();
+    if (!/^\d{6,10}$/.test(code)) {
+      toast.error("Saisissez le code complet reçu par email (6 à 10 chiffres).");
       return;
     }
     if (password.length < 10) {
@@ -116,12 +91,17 @@ export default function Register() {
   };
 
   const handleResend = async () => {
+    if (resending || submitting) return;
+    setResending(true);
     try {
       await authService.sendOtp(email.trim(), role, username.trim());
-      toast.success("Nouveau code envoyé.");
+      setOtp("");
+      toast.success("Nouveau code envoyé. Utilisez uniquement le dernier email reçu.");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Envoi impossible.";
       toast.error(msg);
+    } finally {
+      setResending(false);
     }
   };
 
@@ -249,30 +229,22 @@ export default function Register() {
             </section>
 
             <section>
-              <label className="label-base">Code reçu par email ({OTP_LENGTH} chiffres)</label>
-              <div className="mt-3 flex justify-center gap-2">
-                {otp.map((d, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={d}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    onKeyDown={(e) => handleOtpKey(i, e)}
-                    onPaste={handleOtpPaste}
-                    className="h-14 w-14 rounded-sm border border-input bg-background text-center font-display text-2xl font-semibold text-foreground num focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/40"
-                  />
-                ))}
-              </div>
+              <label className="label-base" htmlFor="registration-otp">Code reçu par email</label>
+              <input id="registration-otp" type="text" inputMode="numeric" autoComplete="one-time-code"
+                value={otp} maxLength={10} pattern="[0-9]{6,10}" required
+                disabled={submitting || resending}
+                onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0,10))}
+                className="input-base mt-3 h-14 text-center text-2xl tracking-[0.35em]"
+                placeholder="Code complet" />
+              <p className="mt-2 text-xs text-muted-foreground">Copiez le code complet du dernier email reçu. Un code est à usage unique.</p>
               <div className="mt-2 text-center">
                 <button
                   type="button"
                   onClick={handleResend}
+                  disabled={resending || submitting}
                   className="text-[11px] font-semibold text-primary hover:underline"
                 >
-                  Renvoyer le code
+                  {resending ? "Envoi en cours…" : "Renvoyer le code"}
                 </button>
               </div>
             </section>
