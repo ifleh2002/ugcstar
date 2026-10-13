@@ -8,7 +8,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [account, setAccount] = useState(false);
   const nav = useNavigate();
-  const links = [["/marques", "Pour les marques"], ["/devenir-createur", "Pour les créateurs"], ["/tarifs", "Tarifs"], ["/blog", "Blog"]];
+  const links = [["/marques", "Pour les marques"], ["/devenir-createur", "Pour les créateurs"], ["/tarifs", "Tarifs"], ["/blog", "Blog"], ["/brands", "Marques inscrites"]];
   const close = () => { setOpen(false); setAccount(false); };
   return <header className="sc-header"><div className="sc-shell sc-nav">
     <Link to="/" className="sc-logo" onClick={() => { close(); window.scrollTo(0,0); }} aria-label="StarCast accueil">StarCast<span>.</span></Link>

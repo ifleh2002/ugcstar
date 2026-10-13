@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { CREATORS } from "@/lib/mockData";
+import { CREATORS as DEMO_CREATORS } from "@/lib/mockData";
+import { useDirectory } from "@/hooks/useDirectory";
 import type { ContractTemplateId, VideoStyle } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
@@ -18,6 +19,8 @@ const STYLES: VideoStyle[] = ["Testimonial", "Unboxing", "Tutorial", "Narrative"
 export default function OrderNew() {
   const { id } = useParams();
   const nav = useNavigate();
+  const { creators, loading, error } = useDirectory();
+  const CREATORS = [...creators, ...DEMO_CREATORS];
   const creator = CREATORS.find((c) => c.id === id);
 
   const [templateId, setTemplateId] = useState<ContractTemplateId>("ugc-standard");
@@ -29,6 +32,8 @@ export default function OrderNew() {
   const [briefing, setBriefing] = useState("");
   const isReadOnly = useReadOnly();
 
+  if (loading) return <div className="container py-16">Chargement du profil…</div>;
+  if (error) return <div className="container py-16" role="alert">{error}</div>;
   if (!creator) return <NotFound />;
 
   if (isReadOnly) {

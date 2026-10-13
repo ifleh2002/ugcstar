@@ -19,6 +19,7 @@ import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import { useEffect } from "react";
+import Brands from "@/pages/Brands";
 import Profile from "@/pages/Profile";
 import Marketing from "@/pages/Marketing";
 import CookiePreferences from "@/components/features/CookiePreferences";
@@ -48,6 +49,8 @@ export default function App() {
               <Route path="/blog" element={<Marketing page="blog"/>} />
               <Route path="/blog/:slug" element={<Marketing page="article"/>} />
               <Route path="/informations/:section" element={<Marketing page="infos"/>} />
+              <Route path="/brands" element={<Brands />} />
+              <Route path="/brands/:id" element={<Brands />} />
               <Route path="/creators" element={<Creators />} />
               <Route path="/creators/:id" element={<CreatorDetail />} />
               <Route

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { CREATORS } from "@/lib/mockData";
+import { CREATORS as DEMO_CREATORS } from "@/lib/mockData";
+import { useDirectory } from "@/hooks/useDirectory";
 import type { CreatorCategory, VideoStyle } from "@/types";
 import { cn, formatCompact, formatPrice } from "@/lib/utils";
 
@@ -11,6 +12,10 @@ const STYLES: VideoStyle[] = ["Testimonial", "Unboxing", "Tutorial", "Narrative"
 type SortKey = "rating" | "followers" | "price" | "turnaround";
 
 export default function Creators() {
+  const { creators, loading, error } = useDirectory();
+  const [includeDemo, setIncludeDemo] = useState(false);
+  const CREATORS = includeDemo ? [...creators, ...DEMO_CREATORS.map(c=>({...c,demo:true}))] : creators;
+  const [budgetSet,setBudgetSet] = useState(false);
   const [params, setParams] = useSearchParams();
   const country = params.get("country") || "";
   const language = params.get("language") || "";
@@ -32,7 +37,7 @@ export default function Creators() {
       if (query && !`${c.name} ${c.tagline} ${c.city}`.toLowerCase().includes(query.toLowerCase())) return false;
       if (cats.length && !c.categories.some((cat) => cats.includes(cat))) return false;
       if (styles.length && !c.styles.some((s) => styles.includes(s))) return false;
-      if (c.pricePerVideo > maxPrice) return false;
+      if (budgetSet && c.pricePerVideo > maxPrice) return false;
       if (verifiedOnly && !c.verified) return false;
       return true;
     });
@@ -43,7 +48,7 @@ export default function Creators() {
       return a.turnaroundDays - b.turnaroundDays;
     });
     return list;
-  }, [query, cats, styles, maxPrice, verifiedOnly, sort, country, language]);
+  }, [query, cats, styles, maxPrice, verifiedOnly, sort, country, language, creators, includeDemo, budgetSet]);
 
   const toggleCat = (c: CreatorCategory) =>
     setCats((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
@@ -56,6 +61,8 @@ export default function Creators() {
 
   const comparedCreators = CREATORS.filter((c) => compare.includes(c.id));
 
+  if (loading) return <div className="container py-16">Chargement des profils inscrits…</div>;
+  if (error) return <div className="container py-16" role="alert">Impossible de charger les profils : {error}</div>;
   return (
     <div className="container py-10 md:py-14">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -63,7 +70,7 @@ export default function Creators() {
           <span className="label-base">Casting</span>
           <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight md:text-5xl">Explorer les créateurs</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {filtered.length} profils correspondent à vos critères — sélectionnez-en jusqu'à 3 pour comparer. Données de démonstration.
+            {filtered.length} profils correspondent à vos critères — sélectionnez-en jusqu'à 3 pour comparer. Profils enregistrés dans StarCast.
           </p>
         </div>
 
@@ -84,7 +91,7 @@ export default function Creators() {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
         {/* Sidebar filters */}
-        <aside className="h-fit space-y-6 lg:sticky lg:top-24">
+        <aside className="h-fit space-y-6 lg:sticky lg:top-24"><Link to="/brands" className="btn-outline w-full">Voir les marques inscrites ↗</Link><label className="card-base flex items-center gap-3 p-5 text-xs"><input type="checkbox" checked={includeDemo} onChange={e=>setIncludeDemo(e.target.checked)}/>Inclure les profils de démonstration</label>
           <div className="card-base p-5 space-y-4">
             <label className="label-base block">Pays<select aria-label="Pays" className="input-base mt-2" value={country} onChange={e => setFilterParam("country", e.target.value)}><option value="">Tous les pays</option>{COUNTRIES.map(([code,flag,name]) => <option key={code} value={code}>{flag} {name}</option>)}</select></label>
             <label className="label-base block">Langue<select aria-label="Langue" className="input-base mt-2" value={language} onChange={e => setFilterParam("language",e.target.value)}><option value="">Toutes les langues</option>{[["FR","Français"],["EN","Anglais"],["AR","Arabe"],["ES","Espagnol"]].map(([code,name])=><option key={code} value={code}>{name}</option>)}</select></label>
@@ -140,14 +147,14 @@ export default function Creators() {
           </div>
 
           <div className="card-base p-5">
-            <h3 className="label-base">Budget max · {formatPrice(maxPrice)}</h3>
+            <h3 className="label-base">Budget max · {budgetSet ? formatPrice(maxPrice) : "Sans limite"}</h3>
             <input
               type="range"
               min={300}
               max={2000}
               step={50}
               value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
+              onChange={(e) => {setBudgetSet(true);setMaxPrice(Number(e.target.value));}}
               className="mt-4 w-full accent-[hsl(var(--primary))]"
             />
             <div className="mt-1 flex justify-between text-xs text-muted-foreground num">
@@ -171,17 +178,17 @@ export default function Creators() {
         <div className="min-w-0">
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map(c => <article key={c.id} className="sc-talent-card">
-              <Link to={`/creators/${c.id}`} className="sc-talent-photos" aria-label={`Voir le profil de ${c.name}`}>
+              <Link to={`/creators/${c.id}`} className="sc-talent-photos" style={{gridTemplateColumns:`repeat(${Math.min(3,c.portfolio.length+1)},1fr)`}} aria-label={`Voir le profil de ${c.name}`}>
                 {[c.avatar, ...c.portfolio.slice(0,2).map(item=>item.cover)].map((src,i)=><img key={i} loading="lazy" src={src} alt={i===0?c.name:`Portfolio ${c.name}`} />)}
               </Link>
-              <div className="sc-talent-info"><Link to={`/creators/${c.id}`}><strong>{c.name} {c.verified && <span className="sc-verified">●</span>}</strong></Link><span className="sc-rating">★ {c.rating}</span><p>{c.city} · {c.languages.join(' / ')}</p><small>{formatCompact(c.followers)} abonnés · {c.reviews} avis</small>
+              <div className="sc-talent-info"><Link to={`/creators/${c.id}`}><strong>{c.name} {c.verified && <span className="sc-verified">●</span>}</strong></Link><span className="sc-rating">{c.reviews ? `★ ${c.rating}` : "Nouveau"}</span><p>{c.city} · {c.languages.join(' / ')}</p><small>{formatCompact(c.followers)} abonnés · {c.reviews} avis</small>
                 <div className="mt-3 flex flex-wrap gap-1">{c.categories.map(cat=><span className="pill !px-2 !py-0.5 !text-[9px]" key={cat}>{cat}</span>)}</div>
-                <div className="mt-4 flex items-center justify-between border-t pt-3"><span className="text-xs font-semibold">{formatPrice(c.pricePerVideo)}</span><span className="text-[10px] text-muted-foreground">{c.turnaroundDays} jours · tarif démo</span></div>
+                <div className="mt-4 flex items-center justify-between border-t pt-3"><span className="text-xs font-semibold">{c.pricePerVideo ? formatPrice(c.pricePerVideo) : "Sur devis"}</span><span className="text-[10px] text-muted-foreground">{c.turnaroundDays ? `${c.turnaroundDays} jours` : "Délai à définir"} · {c.demo ? "Démo" : "Profil inscrit"}</span></div>
                 <label className="mt-4 flex items-center gap-2 text-[11px] text-muted-foreground"><input type="checkbox" checked={compare.includes(c.id)} disabled={!compare.includes(c.id) && compare.length>=3} onChange={()=>toggleCompare(c.id)} aria-label={`Comparer ${c.name}`}/>Comparer ce profil</label>
               </div>
             </article>)}
           </div>
-          {!filtered.length && <div className="card-base p-10 text-center"><h2 className="font-semibold">Aucun créateur pour ces critères</h2><p className="mt-2 text-sm text-muted-foreground">Le catalogue actuel contient des profils de démonstration en France. Essayez un autre filtre.</p><button className="sc-button mt-5" onClick={()=>{setQuery('');setCats([]);setStyles([]);setMaxPrice(2000);setVerifiedOnly(false);setParams({});}}>Réinitialiser les filtres</button></div>}
+          {!filtered.length && <div className="card-base p-10 text-center"><h2 className="font-semibold">Aucun créateur pour ces critères</h2><p className="mt-2 text-sm text-muted-foreground">Essayez un autre pays, une autre catégorie ou retirez le filtre de budget.</p><button className="sc-button mt-5" onClick={()=>{setQuery('');setCats([]);setStyles([]);setMaxPrice(2000);setBudgetSet(false);setVerifiedOnly(false);setParams({});}}>Réinitialiser les filtres</button></div>}
 
           {/* Comparison panel */}
           {comparedCreators.length >= 2 && (

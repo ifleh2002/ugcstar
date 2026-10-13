@@ -1,13 +1,18 @@
 import { Link, useParams } from "react-router-dom";
-import { CREATORS } from "@/lib/mockData";
+import { CREATORS as DEMO_CREATORS } from "@/lib/mockData";
+import { useDirectory } from "@/hooks/useDirectory";
 import { formatCompact, formatPrice } from "@/lib/utils";
 import NotFound from "@/pages/NotFound";
 import { useReadOnly } from "@/hooks/useReadOnly";
 
 export default function CreatorDetail() {
   const { id } = useParams();
+  const { creators, loading, error } = useDirectory();
+  const CREATORS = [...creators, ...DEMO_CREATORS];
   const creator = CREATORS.find((c) => c.id === id);
   const isReadOnly = useReadOnly();
+  if (loading) return <div className="container py-16">Chargement du profil…</div>;
+  if (error) return <div className="container py-16" role="alert">{error}</div>;
   if (!creator) return <NotFound />;
 
   return (
@@ -50,6 +55,7 @@ export default function CreatorDetail() {
           <div>
             <p className="font-display text-xl leading-relaxed text-foreground">{creator.tagline}</p>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">{creator.bio}</p>
+            {creator.socials?.length ? <div className="mt-6 flex flex-wrap gap-3">{creator.socials.filter(s=>s.url).map(s=><a key={s.url} className="pill" href={s.url} target="_blank" rel="noopener noreferrer">{s.network} · {formatCompact(s.followers)} abonnés ↗</a>)}</div> : null}
 
             <div className="mt-8 flex flex-wrap gap-2">
               {creator.categories.map((c) => <span key={c} className="pill">{c}</span>)}
@@ -77,10 +83,10 @@ export default function CreatorDetail() {
                       ) : (
                         <img src={p.cover} alt={p.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       )}
-                      <span className="absolute left-3 top-3 pill bg-background/90 num">{p.duration}s</span>
+                      {p.duration > 0 && <span className="absolute left-3 top-3 pill bg-background/90 num">{p.duration}s</span>}
                     </div>
                     <div className="p-4">
-                      <p className="font-display text-base font-semibold line-clamp-1">{p.title}</p>
+                      <p className="font-display text-base font-semibold line-clamp-1">{p.title}</p>{p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="sc-text-link">Voir la réalisation ↗</a>}
                       <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
                         <span>{p.brand}</span>
                         <span className={p.visibility === "public" ? "text-foreground" : "text-primary"}>
@@ -98,7 +104,7 @@ export default function CreatorDetail() {
           <aside className="h-fit space-y-4 lg:sticky lg:top-24">
             <div className="card-base p-6">
               <p className="label-base">Tarif de base</p>
-              <p className="mt-2 font-display text-4xl font-semibold num">{formatPrice(creator.pricePerVideo)}</p>
+              <p className="mt-2 font-display text-4xl font-semibold num">{creator.pricePerVideo ? formatPrice(creator.pricePerVideo) : "Sur devis"}</p>
               <p className="mt-1 text-xs text-muted-foreground">par vidéo · 2 révisions incluses</p>
               {isReadOnly ? (
                 <div className="mt-5 rounded-sm border border-dashed border-amber-500/40 bg-amber-50/50 p-3 text-center text-[11px] leading-snug text-amber-900">
@@ -113,10 +119,10 @@ export default function CreatorDetail() {
             <div className="card-base divide-y divide-border">
               {[
                 { label: "Abonnés", value: formatCompact(creator.followers) },
-                { label: "Vues moyennes", value: formatCompact(creator.avgViews) },
-                { label: "Engagement", value: `${creator.engagement}%` },
-                { label: "Note", value: `★ ${creator.rating} (${creator.reviews})` },
-                { label: "Délai moyen", value: `${creator.turnaroundDays} jours` },
+                { label: "Vues moyennes", value: creator.avgViews ? formatCompact(creator.avgViews) : "Non renseignées" },
+                { label: "Engagement", value: creator.engagement ? `${creator.engagement}%` : "Non renseigné" },
+                { label: "Note", value: creator.reviews ? `★ ${creator.rating} (${creator.reviews})` : "Aucun avis pour le moment" },
+                { label: "Délai moyen", value: creator.turnaroundDays ? `${creator.turnaroundDays} jours` : "À définir" },
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between px-5 py-3">
                   <span className="text-sm text-muted-foreground">{row.label}</span>

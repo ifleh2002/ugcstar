@@ -7,6 +7,10 @@ export type ContractTemplateId = "ugc-standard" | "exclusivity" | "long-format";
 export type MessageAuthor = "client" | "star" | "plateforme";
 
 export interface Creator {
+  demo?: boolean;
+  aiPrice?: number;
+  realPrice?: number;
+  socials?: { network: string; url: string; followers: number }[];
   id: string;
   name: string;
   handle: string;
@@ -31,6 +35,7 @@ export interface Creator {
 }
 
 export interface PortfolioItem {
+  url?: string;
   id: string;
   title: string;
   cover: string;
