@@ -11,7 +11,7 @@ export default function Navbar() {
   const links = [["/marques", "Pour les marques"], ["/devenir-createur", "Pour les créateurs"], ["/tarifs", "Tarifs"], ["/blog", "Blog"]];
   const close = () => { setOpen(false); setAccount(false); };
   return <header className="sc-header"><div className="sc-shell sc-nav">
-    <Link to="/" className="sc-logo" onClick={close} aria-label="StarCast accueil">StarCast<span>.</span></Link>
+    <Link to="/" className="sc-logo" onClick={() => { close(); window.scrollTo(0,0); }} aria-label="StarCast accueil">StarCast<span>.</span></Link>
     <nav aria-label="Menu principal" className="sc-desktop-nav">{links.map(([url,label]) => <NavLink key={url} to={url}>{label}</NavLink>)}</nav>
     <div className="sc-nav-actions"><Link className="sc-demo-link" to="/demo">Réserver une démo <ArrowUpRight size={14}/></Link>
     {user ? <div className="sc-account"><button className="sc-account-button" onClick={() => setAccount(!account)} aria-expanded={account}>{user.username} <ChevronDown size={14}/></button>

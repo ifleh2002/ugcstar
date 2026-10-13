@@ -167,80 +167,21 @@ export default function Creators() {
           </label>
         </aside>
 
-        {/* Table */}
+        {/* Creator cards */}
         <div className="min-w-0">
-          <div className="card-base overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/60">
-                  <tr className="text-left label-base">
-                    <th className="px-4 py-3"></th>
-                    <th className="px-4 py-3">Créateur</th>
-                    <th className="px-4 py-3">Catégories</th>
-                    <th className="px-4 py-3 text-right">Audience</th>
-                    <th className="px-4 py-3 text-right">Eng.</th>
-                    <th className="px-4 py-3 text-right">Note</th>
-                    <th className="px-4 py-3 text-right">Prix</th>
-                    <th className="px-4 py-3 text-right">Délai</th>
-                    <th className="px-4 py-3 text-right"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((c) => (
-                    <tr key={c.id} className="border-t border-border transition-colors hover:bg-muted/40">
-                      <td className="px-4 py-4">
-                        <input
-                          type="checkbox"
-                          checked={compare.includes(c.id)}
-                          onChange={() => toggleCompare(c.id)}
-                          className="h-4 w-4 accent-[hsl(var(--primary))]"
-                          aria-label={`Comparer ${c.name}`}
-                        />
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <img src={c.avatar} alt={c.name} className="h-11 w-11 rounded-full object-cover" />
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <Link to={`/creators/${c.id}`} className="font-display text-base font-semibold hover:text-primary">
-                                {c.name}
-                              </Link>
-                              {c.verified && <span className="pill border-secondary bg-secondary text-secondary-foreground">✓</span>}
-                            </div>
-                            <p className="text-xs text-muted-foreground">{c.city} · {c.languages.join(" / ")}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-wrap gap-1">
-                          {c.categories.map((cat) => (
-                            <span key={cat} className="pill">{cat}</span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-right num">{formatCompact(c.followers)}</td>
-                      <td className="px-4 py-4 text-right num">{c.engagement}%</td>
-                      <td className="px-4 py-4 text-right num">
-                        <span className="text-primary">★</span> {c.rating}
-                      </td>
-                      <td className="px-4 py-4 text-right font-display font-semibold num">{formatPrice(c.pricePerVideo)}</td>
-                      <td className="px-4 py-4 text-right num text-muted-foreground">{c.turnaroundDays}j</td>
-                      <td className="px-4 py-4 text-right">
-                        <Link to={`/creators/${c.id}`} className="text-sm font-semibold text-primary hover:underline">Voir →</Link>
-                      </td>
-                    </tr>
-                  ))}
-                  {filtered.length === 0 && (
-                    <tr>
-                      <td colSpan={9} className="px-4 py-16 text-center text-muted-foreground">
-                        Aucun créateur ne correspond à ces critères.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map(c => <article key={c.id} className="sc-talent-card">
+              <Link to={`/creators/${c.id}`} className="sc-talent-photos" aria-label={`Voir le profil de ${c.name}`}>
+                {[c.avatar, ...c.portfolio.slice(0,2).map(item=>item.cover)].map((src,i)=><img key={i} loading="lazy" src={src} alt={i===0?c.name:`Portfolio ${c.name}`} />)}
+              </Link>
+              <div className="sc-talent-info"><Link to={`/creators/${c.id}`}><strong>{c.name} {c.verified && <span className="sc-verified">●</span>}</strong></Link><span className="sc-rating">★ {c.rating}</span><p>{c.city} · {c.languages.join(' / ')}</p><small>{formatCompact(c.followers)} abonnés · {c.reviews} avis</small>
+                <div className="mt-3 flex flex-wrap gap-1">{c.categories.map(cat=><span className="pill !px-2 !py-0.5 !text-[9px]" key={cat}>{cat}</span>)}</div>
+                <div className="mt-4 flex items-center justify-between border-t pt-3"><span className="text-xs font-semibold">{formatPrice(c.pricePerVideo)}</span><span className="text-[10px] text-muted-foreground">{c.turnaroundDays} jours · tarif démo</span></div>
+                <label className="mt-4 flex items-center gap-2 text-[11px] text-muted-foreground"><input type="checkbox" checked={compare.includes(c.id)} disabled={!compare.includes(c.id) && compare.length>=3} onChange={()=>toggleCompare(c.id)} aria-label={`Comparer ${c.name}`}/>Comparer ce profil</label>
+              </div>
+            </article>)}
           </div>
+          {!filtered.length && <div className="card-base p-10 text-center"><h2 className="font-semibold">Aucun créateur pour ces critères</h2><p className="mt-2 text-sm text-muted-foreground">Le catalogue actuel contient des profils de démonstration en France. Essayez un autre filtre.</p><button className="sc-button mt-5" onClick={()=>{setQuery('');setCats([]);setStyles([]);setMaxPrice(2000);setVerifiedOnly(false);setParams({});}}>Réinitialiser les filtres</button></div>}
 
           {/* Comparison panel */}
           {comparedCreators.length >= 2 && (
