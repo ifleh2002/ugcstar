@@ -79,7 +79,7 @@ export default function Register() {
       );
       const authUser = mapSupabaseUser(u);
       login(authUser);
-      nav("/dashboard", { replace: true });
+      nav("/mon-profil", { replace: true });
       toast.success(`Compte créé — bienvenue ${authUser.username}.`, {
         description: `Rôle : ${ROLE_LABELS[authUser.role]}`,
       });

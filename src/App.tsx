@@ -18,6 +18,7 @@ import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import { useEffect } from "react";
+import Profile from "@/pages/Profile";
 import Marketing from "@/pages/Marketing";
 import CookiePreferences from "@/components/features/CookiePreferences";
 import NotFound from "@/pages/NotFound";
@@ -38,6 +39,7 @@ export default function App() {
 
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/mon-profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/marques" element={<Marketing page="marques"/>} />
               <Route path="/devenir-createur" element={<Marketing page="createurs"/>} />
               <Route path="/tarifs" element={<Marketing page="tarifs"/>} />
