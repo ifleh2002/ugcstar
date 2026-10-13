@@ -186,7 +186,7 @@ export default function Register() {
                 })}
               </div>
               <p className="mt-3 text-[11px] text-muted-foreground">
-                Mode démo · En production, les rôles Admin et Collaborateur nécessiteraient une invitation.
+                Les accès Administrateur et Collaborateur sont attribués par invitation uniquement.
               </p>
             </section>
 

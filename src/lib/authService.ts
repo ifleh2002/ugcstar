@@ -28,6 +28,7 @@ export const authService = {
       email,
       options: {
         shouldCreateUser: true,
+        emailRedirectTo: "https://ugcstar.vercel.app/auth/activate",
         data: { role, username },
       },
     });
