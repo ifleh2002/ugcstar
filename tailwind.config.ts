@@ -13,7 +13,7 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        display: ['"Fraunces"', "serif"],
+        display: ['"Inter"', "ui-sans-serif", "system-ui"],
         sans: ['"Inter"', "ui-sans-serif", "system-ui"],
       },
       colors: {

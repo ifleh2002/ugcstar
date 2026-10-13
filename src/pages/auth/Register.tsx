@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { authService, mapSupabaseUser } from "@/lib/authService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,7 +19,8 @@ export default function Register() {
   const nav = useNavigate();
   const { user, loading, login } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
-  const [role, setRole] = useState<UserRole>("user");
+  const [searchParams] = useSearchParams();
+  const [role, setRole] = useState<UserRole>(searchParams.get("role") === "creator" ? "creator" : "user");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));

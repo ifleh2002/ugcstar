@@ -1,168 +1,34 @@
 import { Link } from "react-router-dom";
-import { lazy, Suspense } from "react";
-const GravityGallery = lazy(() => import("@/components/hero/GravityGallery"));
-const screenadsImg = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&fit=crop";
+import { ArrowUpRight, Check, MessageSquare, FileText, Users, LayoutDashboard, Sparkles, ShieldCheck, Play, ChevronRight } from "lucide-react";
 import { CREATORS } from "@/lib/mockData";
 import { formatCompact } from "@/lib/utils";
-
+import { ARTICLES, COUNTRIES, FAQ } from "@/lib/marketing";
+const featured = CREATORS.slice(0,4);
+const photos = ["https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&fit=crop","https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&fit=crop","https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&fit=crop","https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&fit=crop"];
+function CTA({label="Explorer les créateurs",to="/creators"}:{label?:string;to?:string}) { return <Link className="sc-button" to={to}>{label}<ArrowUpRight size={17}/></Link>; }
+function CreatorCards({compact=false}:{compact?:boolean}) { return <div className={compact ? "sc-talent-grid sc-talent-mini" : "sc-talent-grid"}>{featured.map((c,i) => <Link className="sc-talent-card" key={c.id} to={'/creators/'+c.id}><div className="sc-talent-photos">{[c.avatar,...c.portfolio.slice(0,2).map(p=>p.cover)].map((src,j) => <img loading="lazy" key={j} src={src} alt={j===0 ? c.name : `Portfolio ${c.name}`} />)}<span className="sc-talent-number">0{i+1}</span></div><div className="sc-talent-info"><strong>{c.name} {c.verified && <span className="sc-verified">●</span>}</strong><span className="sc-rating">★ {c.rating}</span><p>{c.city} · {c.languages.join(' / ')}</p><small>{formatCompact(c.followers)} abonnés · {c.reviews} avis</small></div></Link>)}</div>; }
 export default function Landing() {
-  const featured = CREATORS.slice(0, 4);
-
-  return (
-    <div>
-      {/* HERO */}
-      <section className="border-b border-border">
-        <div className="container grid gap-10 pb-16 md:grid-cols-12 md:pb-24">
-          <div className="min-w-0 md:col-span-12">
-            <div className="h-[320px] overflow-hidden rounded-md border border-border sm:h-[440px] lg:h-[500px]">
-              <Suspense fallback={<div className="h-full bg-muted" />}>
-                <GravityGallery count={20} size={126} />
-              </Suspense>
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">Gravity Gallery · Attrapez et déplacez les photos à la souris ou au toucher.</p>
-          </div>
-          <div className="md:col-span-7 flex flex-col justify-center">
-            <span className="label-base">N°001 — Plateforme UGC</span>
-            <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl">
-              Les meilleurs créateurs, <em className="not-italic text-primary">en production</em>, dans la minute.
-            </h1>
-            <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
-              StarCast relie marques et créateurs/stars pour produire des vidéos UGC et publicitaires signées,
-              validées et diffusées sur votre réseau d'écrans Screenads.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/creators" className="btn-dark">Explorer les créateurs</Link>
-              <Link to="/dashboard" className="btn-outline">Voir le workflow</Link>
-            </div>
-
-            <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-border pt-8">
-              <div>
-                <dt className="label-base">Créateurs vérifiés</dt>
-                <dd className="mt-2 font-display text-3xl font-semibold num">1 284</dd>
-              </div>
-              <div>
-                <dt className="label-base">Vidéos livrées</dt>
-                <dd className="mt-2 font-display text-3xl font-semibold num">37.6k</dd>
-              </div>
-              <div>
-                <dt className="label-base">Écrans connectés</dt>
-                <dd className="mt-2 font-display text-3xl font-semibold num">892</dd>
-              </div>
-            </dl>
-          </div>
-
-
-        </div>
-      </section>
-
-      {/* MARQUEE */}
-      <section className="border-b border-border bg-secondary py-4 text-secondary-foreground">
-        <div className="flex gap-12 overflow-hidden">
-          <div className="animate-marquee flex min-w-full flex-shrink-0 gap-12 pr-12 font-display text-lg tracking-tight">
-            {["Lumi Cosmetics", "NovaTech", "DairyCo", "Maison L.", "PeakGear", "Épicerie Barjac", "AudioLab", "Skinpure"].map((b) => (
-              <span key={b} className="whitespace-nowrap opacity-80">— {b}</span>
-            ))}
-          </div>
-          <div className="animate-marquee flex min-w-full flex-shrink-0 gap-12 pr-12 font-display text-lg tracking-tight" aria-hidden>
-            {["Lumi Cosmetics", "NovaTech", "DairyCo", "Maison L.", "PeakGear", "Épicerie Barjac", "AudioLab", "Skinpure"].map((b) => (
-              <span key={b} className="whitespace-nowrap opacity-80">— {b}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURED CREATORS */}
-      <section className="border-b border-border">
-        <div className="container py-16 md:py-24">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl">
-              <span className="label-base">N°002 — Casting</span>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
-                Créateurs en vedette cette semaine
-              </h2>
-            </div>
-            <Link to="/creators" className="btn-ghost self-start md:self-end">Voir tous les créateurs →</Link>
-          </div>
-
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {featured.map((c, idx) => (
-              <Link
-                key={c.id}
-                to={`/creators/${c.id}`}
-                className="group card-base overflow-hidden transition-shadow hover:shadow-lg"
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-                  <img src={c.cover} alt={c.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <span className="absolute left-3 top-3 pill bg-background/90">
-                    N°{String(idx + 1).padStart(2, "0")}
-                  </span>
-                  {c.verified && <span className="absolute right-3 top-3 pill bg-secondary text-secondary-foreground border-secondary">Vérifié</span>}
-                </div>
-                <div className="p-4">
-                  <div className="flex items-baseline justify-between">
-                    <h3 className="font-display text-lg font-semibold">{c.name}</h3>
-                    <span className="text-xs text-muted-foreground">{c.city}</span>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-1">{c.tagline}</p>
-                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                    <span className="text-xs font-medium text-muted-foreground">{formatCompact(c.followers)} abonnés</span>
-                    <span className="font-display text-sm font-semibold text-primary">★ {c.rating}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* WORKFLOW */}
-      <section className="border-b border-border bg-muted/40">
-        <div className="container py-16 md:py-24">
-          <div className="max-w-2xl">
-            <span className="label-base">N°003 — Workflow</span>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
-              Du brief à l'écran, sans friction.
-            </h2>
-          </div>
-          <ol className="mt-12 grid gap-6 md:grid-cols-4">
-            {[
-              { n: "01", t: "Brief détaillé", d: "Style, durée, voix off, référence. Chaque champ dicte la production." },
-              { n: "02", t: "Messagerie tripartite", d: "Client, star et plateforme sur un fil unique, traçable." },
-              { n: "03", t: "Validation signée", d: "Rendu approuvé, contrat PDF signé électroniquement." },
-              { n: "04", t: "Diffusion Screenads", d: "Programmation sur écrans synchronisés en quelques clics." },
-            ].map((s) => (
-              <li key={s.n} className="card-base p-6">
-                <span className="font-display text-5xl font-semibold text-primary num">{s.n}</span>
-                <h3 className="mt-6 font-display text-xl font-semibold">{s.t}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.d}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* SCREENADS CTA */}
-      <section className="bg-secondary text-secondary-foreground">
-        <div className="container grid gap-10 py-16 md:grid-cols-2 md:py-24">
-          <div>
-            <span className="label-base text-primary">N°004 — Screenads</span>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
-              Un réseau d'écrans synchronisés, pilotés depuis un seul endroit.
-            </h2>
-            <p className="mt-6 max-w-xl text-base text-secondary-foreground/80">
-              Composez des playlists, planifiez des créneaux horaires, surveillez l'état de chaque terminal.
-              Les vidéos UGC validées se diffusent instantanément, en synchronisation parfaite.
-            </p>
-            <div className="mt-8 flex gap-3">
-              <Link to="/screenads" className="btn-primary">Ouvrir Screenads</Link>
-              <Link to="/dashboard" className="btn-outline border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/10">Mes commandes</Link>
-            </div>
-          </div>
-          <div className="relative overflow-hidden rounded-md border border-secondary-foreground/20">
-            <img src={screenadsImg} alt="Visualisation du réseau Screenads" className="aspect-[3/2] w-full object-cover" />
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+  return <div className="sc-landing">
+    <section className="sc-hero"><div className="sc-shell sc-hero-grid"><div className="sc-hero-copy"><span className="sc-eyebrow">LA PLATEFORME UGC</span><h1>Trouvez & créez avec les meilleurs <span className="sc-highlight">talents UGC.</span><br/>Pour votre marque.</h1><p>Vos idées méritent les bons visages. Rencontrez les créateurs qui feront vivre votre marque, en vidéo IA ou en tournage réel.</p><div className="sc-country-grid"><Link className="sc-country sc-country-all" to="/creators"><span>◎</span> Tous les créateurs <ArrowUpRight size={14}/></Link>{COUNTRIES.map(([code,flag,name]) => <Link className="sc-country" key={code} to={'/creators?country='+code}><span>{flag}</span>{name}<ArrowUpRight size={13}/></Link>)}</div></div>
+    <div className="sc-hero-mosaic" aria-label="Portraits de créateurs"><div className="sc-mosaic-col">{photos.slice(0,2).map((src,i)=><Link to={'/creators/'+featured[i].id} className="sc-portrait" key={src}><img src={src} alt={featured[i].name}/><span><Play size={16} fill="currentColor"/> {i===0 ? 'Une idée. Un visage.' : 'Créons ensemble.'}</span></Link>)}</div><div className="sc-mosaic-col sc-mosaic-offset">{photos.slice(2).map((src,i)=><Link to={'/creators/'+featured[i+2].id} className="sc-portrait" key={src}><img src={src} alt={featured[i+2].name}/><span><Play size={16} fill="currentColor"/> {i===0 ? 'Du contenu qui inspire.' : 'Votre prochaine campagne.'}</span></Link>)}</div><div className="sc-floating-note"><span>✦</span><div><strong>Le prochain coup de cœur ?</strong><small>Il est peut-être juste ici.</small></div></div></div></div></section>
+    <section className="sc-brand-strip sc-shell"><p>Un espace pour les marques, les agences et les créateurs</p><div>{['BEAUTÉ','LIFESTYLE','TECH','FOOD','MODE','SPORT'].map(x=><span key={x}>{x}</span>)}</div></section>
+    <section className="sc-section sc-shell"><div className="sc-section-heading"><span className="sc-eyebrow">LE CASTING DU MOMENT</span><h2>4 talents à <span className="sc-highlight">découvrir.</span></h2><p>Explorez une sélection de profils et trouvez votre prochain partenaire créatif.</p></div><CreatorCards/><p className="sc-demo-caption">Profils et avis de démonstration</p><div className="sc-center"><CTA/></div></section>
+    <section className="sc-section sc-shell" id="fonctionnement"><div className="sc-section-heading"><h2>La plateforme UGC dont<br/>vous avez <span className="sc-highlight">toujours rêvé.</span></h2></div>
+    <div className="sc-step sc-step-pink"><span className="sc-step-label">ÉTAPE 01</span><h3>Trouvez les créateurs<br/>qui vous ressemblent.</h3><p>Affinez votre casting, explorez les portfolios et comparez les profils en un seul endroit.</p><CTA label="Trouver un talent"/><div className="sc-step-preview"><div className="sc-preview-toolbar"><span>StarCast.</span><span>⌕ Trouver mon prochain créateur</span><span>Profils vérifiés ✓</span></div><CreatorCards compact/></div></div>
+    <div className="sc-step sc-step-blue"><span className="sc-step-label">ÉTAPE 02</span><h3>Présentez votre projet.<br/>Construisez la collaboration.</h3><p>Un brief clair, une conversation fluide et des modalités adaptées à votre campagne.</p><CTA label="Préparer mon projet" to="/dashboard"/><div className="sc-chat-preview"><div className="sc-chat-sidebar"><strong>Mes conversations</strong>{featured.slice(0,3).map(c=><div key={c.id}><img src={c.avatar} alt=""/>{c.name}</div>)}</div><div className="sc-chat-content"><span>{featured[0].name} <small>● Disponible</small></span><p className="sc-chat-bubble">Bonjour ! J’aimerais présenter notre nouvelle gamme avec une vidéo authentique de 30 secondes.</p><p className="sc-chat-bubble sc-chat-reply">Avec plaisir ! Parlez-moi de votre produit et du ton que vous recherchez. ✨</p><div className="sc-chat-input">Un échange, et le projet prend forme…</div></div></div></div>
+    <div className="sc-step sc-step-green"><span className="sc-step-label">ÉTAPE 03</span><h3>Suivez chaque étape.<br/>Validez votre contenu.</h3><p>Contrat, brief, production, livraison : votre projet avance avec une vue d’ensemble.</p><CTA label="Découvrir le suivi" to="/dashboard"/><div className="sc-workflow-preview">{['Brief','Contrat','Production','Livraison','Validation'].map((x,i)=><div key={x}><span>{i<2 ? <Check size={17}/> : '0'+(i+1)}</span><strong>{x}</strong><small>{['Vos objectifs','Les modalités','Le contenu prend vie','Le rendu final','Votre accord'][i]}</small></div>)}</div></div>
+    </section>
+    <section className="sc-section sc-shell"><div className="sc-section-heading"><h2>Tout ce qu’il vous faut.<br/><span className="sc-highlight-blue">Au même endroit.</span></h2></div><div className="sc-features">{[
+      [ShieldCheck,'Un cadre clair','Définissez les droits, les livrables et les modalités de votre projet.','/contracts'],[FileText,'Des contrats intégrés','Choisissez un modèle, dessinez votre signature et téléchargez le PDF.','/contracts'],[Users,'Votre équipe réunie','Les rôles administrateur et collaborateur organisent les accès.','/demo'],[Sparkles,'Deux façons de produire','Création IA avec autorisation, ou tournage réel avec votre talent.','/tarifs'],[LayoutDashboard,'Une vue sur vos projets','Retrouvez les étapes, les échanges et la validation de vos campagnes.','/dashboard'],[MessageSquare,'Une collaboration fluide','Préparez votre brief et échangez autour du contenu attendu.','/dashboard']
+    ].map(([Icon,title,text,url])=><Link key={String(title)} to={String(url)} className="sc-feature">{typeof Icon!=='string' && <Icon size={22}/>}<h3>{String(title)}</h3><p>{String(text)}</p><span>Découvrir <ArrowUpRight size={14}/></span></Link>)}</div></section>
+    <section className="sc-section sc-shell"><div className="sc-section-heading"><h2>Le contenu qui met<br/><span className="sc-highlight">votre produit en scène.</span></h2><p>Un visage, un usage, une histoire : choisissez le format qui parle à votre audience.</p></div><div className="sc-video-layout"><div className="sc-category-list">{[['Tech','📱','Applications & technologie'],['Mode','👕','Mode & accessoires'],['Food','🍔','Food & cuisine'],['Lifestyle','🏡','Maison & lifestyle'],['Famille','🧸','Famille & quotidien'],['Sport','🏃','Sport & bien-être'],['Beauté','💄','Beauté & soin']].map(([cat,emoji,label])=><Link key={cat} to={'/creators?category='+encodeURIComponent(cat)}>{emoji} {label}<ChevronRight size={14}/></Link>)}</div><div className="sc-video-cards">{featured.slice(0,3).map((c,i)=><Link className="sc-video-card" to={'/creators/'+c.id} key={c.id}><img loading="lazy" src={photos[i]} alt={c.name}/><span className="sc-play"><Play size={24} fill="currentColor"/></span><div><strong>{c.name}</strong><span>Voir le portfolio ↗</span></div></Link>)}</div></div></section>
+    <section className="sc-section sc-shell"><div className="sc-section-heading"><h2>De belles collaborations.<br/><span className="sc-highlight">De vrais échanges.</span></h2><p>Les avis des profils de démonstration pour découvrir l’expérience StarCast.</p></div><div className="sc-reviews">{featured.concat(featured.slice(0,2)).map((c,i)=><Link to={'/creators/'+c.id} className="sc-review" key={i}><div><img src={c.avatar} alt=""/><strong>{c.name}</strong><ArrowUpRight size={14}/></div><span className="sc-stars">★★★★★</span><h3>{['Une création pleine d’énergie','Un brief compris, un rendu soigné','Une collaboration agréable'][i%3]}</h3><p>{['Une approche créative et un échange clair autour du produit.','Un talent à découvrir pour imaginer votre prochaine campagne.','Un portfolio inspirant et des formats adaptés à chaque message.'][i%3]}</p><small>Avis de démonstration</small></Link>)}</div></section>
+    <section className="sc-section sc-shell sc-global"><div><span className="sc-eyebrow">DES TALENTS SANS FRONTIÈRES</span><h2>Le bon créateur.<br/>La bonne audience.<br/><span className="sc-highlight-blue">Au bon endroit.</span></h2><p>Explorez les langues et les univers de nos profils. Du Maroc à l’international, imaginez des campagnes qui vous ressemblent.</p><CTA/></div><div className="sc-country-access">{COUNTRIES.slice(0,8).map(([code,flag,name],i)=><Link to={'/creators?country='+code} key={code}><strong>{flag} {name}</strong><div>{featured.slice(0,3).map((c,j)=><img loading="lazy" key={c.id} src={photos[(i+j)%4]} alt=""/>)}</div><ArrowUpRight size={16}/></Link>)}</div></section>
+    <section className="sc-shell sc-stat-row"><div><strong>{CREATORS.length}</strong><span>profils de démonstration</span></div><div><strong>IA + Réel</strong><span>deux modes de production</span></div><div><strong>Votre accord</strong><span>avant la livraison finale</span></div></section>
+    <section className="sc-section sc-shell"><div className="sc-section-heading"><h2>Pourquoi <span className="sc-highlight">StarCast ?</span></h2><p>Un espace commun pour votre casting et votre collaboration.</p></div><div className="sc-comparison-wrap"><table className="sc-comparison"><thead><tr><th>Votre projet</th><th>StarCast.</th><th>Des outils séparés</th><th>Une gestion manuelle</th></tr></thead><tbody>{[['Recherche de talents','Filtres et portfolios','Plusieurs plateformes','Au cas par cas'],['Contrats','Modèles intégrés','Un outil distinct','Documents à préparer'],['Organisation','Un tableau de bord','Des données dispersées','Des fichiers à maintenir'],['Équipe','Des rôles dédiés','Des accès séparés','Des échanges à organiser'],['Validation','Un parcours commun','Des étapes à relier','Un suivi à reconstituer']].map(row=><tr key={row[0]}>{row.map((cell,i)=><td key={i}>{cell}</td>)}</tr>)}</tbody></table></div><div className="sc-center"><CTA/></div></section>
+    <section className="sc-section sc-shell sc-impact"><h2>Votre prochain contenu<br/>commence par <span className="sc-highlight">une rencontre.</span></h2><div className="sc-big-word">Créons.</div><p>Une idée, un talent, une collaboration.<br/>StarCast rassemble les outils pour donner vie à votre projet.</p><CTA/></section>
+    <section className="sc-section sc-shell" id="faq"><div className="sc-section-heading"><h2>Vous avez des questions ?<br/>Nous avons <span className="sc-highlight">des réponses.</span></h2></div><div className="sc-faq">{FAQ.map(([question,answer])=><details key={question}><summary>{question}<span>+</span></summary><p>{answer}</p></details>)}</div></section>
+    <section className="sc-section sc-shell"><div className="sc-section-heading"><h2>Le journal <span className="sc-highlight-blue">StarCast.</span></h2><p>Des idées et des conseils pour vos prochaines campagnes.</p></div><div className="sc-blog-grid">{ARTICLES.map((a,i)=><Link to={'/blog/'+a.slug} className="sc-article-card" key={a.slug}><span className={'sc-article-tag sc-tag-'+i}>{a.category}</span><h3>{a.title}</h3><p>{a.excerpt}</p><span className="sc-text-link">Lire l’article <ArrowUpRight size={16}/></span></Link>)}</div></section>
+    <section className="sc-section sc-shell sc-final-cta"><h2>Votre prochaine campagne.<br/><span className="sc-highlight">Votre prochain talent.</span></h2><p>Rejoignez la plateforme et commencez à explorer.</p><CreatorCards compact/><div className="sc-center"><CTA label="Créer mon compte" to="/auth/register"/></div></section>
+  </div>;
 }

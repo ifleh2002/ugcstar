@@ -14,6 +14,7 @@ export interface Creator {
   avatar: string;
   cover: string;
   city: string;
+  country?: string;
   languages: string[];
   categories: CreatorCategory[];
   styles: VideoStyle[];

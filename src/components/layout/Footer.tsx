@@ -1,21 +1,9 @@
+import { Link } from "react-router-dom";
 export default function Footer() {
-  return (
-    <footer className="border-t border-border bg-background">
-      <div className="container flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-secondary text-primary">★</div>
-          <div>
-            <p className="font-display text-base font-semibold">StarCast</p>
-            <p className="text-xs text-muted-foreground">Créateurs UGC • Workflow signé • Diffusion Screenads</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          <span>© 2026 StarCast Studios</span>
-          <a className="hover:text-foreground" href="#">Conditions</a>
-          <a className="hover:text-foreground" href="#">Confidentialité</a>
-          <a className="hover:text-foreground" href="#">contact@starcast.io</a>
-        </div>
-      </div>
-    </footer>
-  );
+  const groups = [
+    { title: "La plateforme", links: [["/marques","Pour les marques"],["/devenir-createur","Pour les créateurs"],["/tarifs","Tarifs"],["/creators","Nos talents"]] },
+    { title: "Ressources", links: [["/blog","Le blog"],["/#faq","Centre d’aide"],["/demo","Réserver une démo"],["/dashboard","Mes projets"]] },
+    { title: "Informations", links: [["/informations/confidentialite","Confidentialité"],["/informations/conditions","Conditions d’utilisation"],["/informations/cookies","Gestion des cookies"],["/informations/contact","Nous contacter"]] },
+  ];
+  return <footer className="sc-footer"><div className="sc-shell"><div className="sc-footer-grid"><div><Link className="sc-footer-logo" to="/">StarCast.</Link><p>Des talents. Des idées.<br/>Du contenu qui vous ressemble.</p><Link className="sc-text-link" to="/demo">Parlons de votre projet ↗</Link></div>{groups.map(group => <div key={group.title}><h3>{group.title}</h3>{group.links.map(([url,label]) => <Link key={url} to={url}>{label}</Link>)}</div>)}</div><div className="sc-footer-bottom"><span>© {new Date().getFullYear()} StarCast. Tous droits réservés.</span><span>Création UGC · Vidéos IA et tournages réels</span><span>FR / EUR</span></div><div className="sc-footer-word" aria-hidden>StarCast.</div></div></footer>;
 }

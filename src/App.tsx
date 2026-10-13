@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -17,18 +17,34 @@ import Activate from "@/pages/auth/Activate";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import { useEffect } from "react";
+import Marketing from "@/pages/Marketing";
+import CookiePreferences from "@/components/features/CookiePreferences";
 import NotFound from "@/pages/NotFound";
 
+function ScrollToPage() {
+ const { pathname, hash } = useLocation();
+ useEffect(() => { if(hash) { requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView()); } else window.scrollTo(0,0); }, [pathname, hash]);
+ return null;
+}
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <div className="flex min-h-full flex-col bg-background">
+          <ScrollToPage />
           <Navbar />
           <main className="flex-1">
-            <p className="border-b border-border bg-muted px-4 py-2 text-center text-xs text-muted-foreground">Démonstration : stars, commandes, messages et revenus sont fictifs. Les comptes utilisent le backend configuré.</p>
+
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/marques" element={<Marketing page="marques"/>} />
+              <Route path="/devenir-createur" element={<Marketing page="createurs"/>} />
+              <Route path="/tarifs" element={<Marketing page="tarifs"/>} />
+              <Route path="/demo" element={<Marketing page="demo"/>} />
+              <Route path="/blog" element={<Marketing page="blog"/>} />
+              <Route path="/blog/:slug" element={<Marketing page="article"/>} />
+              <Route path="/informations/:section" element={<Marketing page="infos"/>} />
               <Route path="/creators" element={<Creators />} />
               <Route path="/creators/:id" element={<CreatorDetail />} />
               <Route
@@ -73,6 +89,7 @@ export default function App() {
             </Routes>
           </main>
           <Footer />
+          <CookiePreferences />
           <Toaster richColors position="top-right" />
         </div>
       </BrowserRouter>

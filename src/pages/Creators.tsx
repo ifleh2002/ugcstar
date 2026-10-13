@@ -1,17 +1,24 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { CREATORS } from "@/lib/mockData";
 import type { CreatorCategory, VideoStyle } from "@/types";
 import { cn, formatCompact, formatPrice } from "@/lib/utils";
 
+import { COUNTRIES } from "@/lib/marketing";
 const CATEGORIES: CreatorCategory[] = ["Beauté", "Food", "Lifestyle", "Tech", "Mode", "Sport", "Famille", "Voyage"];
 const STYLES: VideoStyle[] = ["Testimonial", "Unboxing", "Tutorial", "Narrative", "Skit"];
 
 type SortKey = "rating" | "followers" | "price" | "turnaround";
 
 export default function Creators() {
+  const [params, setParams] = useSearchParams();
+  const country = params.get("country") || "";
+  const language = params.get("language") || "";
+  const categoryParam = params.get("category") || "";
+  const setFilterParam = (key: string, value: string) => { const next = new URLSearchParams(params); if(value) next.set(key,value); else next.delete(key); setParams(next); };
   const [query, setQuery] = useState("");
-  const [cats, setCats] = useState<CreatorCategory[]>([]);
+  const [cats, setCats] = useState<CreatorCategory[]>(CATEGORIES.includes(categoryParam as CreatorCategory) ? [categoryParam as CreatorCategory] : []);
+  useEffect(() => { setCats(CATEGORIES.includes(categoryParam as CreatorCategory) ? [categoryParam as CreatorCategory] : []); }, [categoryParam]);
   const [styles, setStyles] = useState<VideoStyle[]>([]);
   const [maxPrice, setMaxPrice] = useState(2000);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
@@ -20,6 +27,8 @@ export default function Creators() {
 
   const filtered = useMemo(() => {
     let list = CREATORS.filter((c) => {
+      if (country && c.country !== country) return false;
+      if (language && !c.languages.includes(language)) return false;
       if (query && !`${c.name} ${c.tagline} ${c.city}`.toLowerCase().includes(query.toLowerCase())) return false;
       if (cats.length && !c.categories.some((cat) => cats.includes(cat))) return false;
       if (styles.length && !c.styles.some((s) => styles.includes(s))) return false;
@@ -34,7 +43,7 @@ export default function Creators() {
       return a.turnaroundDays - b.turnaroundDays;
     });
     return list;
-  }, [query, cats, styles, maxPrice, verifiedOnly, sort]);
+  }, [query, cats, styles, maxPrice, verifiedOnly, sort, country, language]);
 
   const toggleCat = (c: CreatorCategory) =>
     setCats((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
@@ -54,7 +63,7 @@ export default function Creators() {
           <span className="label-base">Casting</span>
           <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight md:text-5xl">Explorer les créateurs</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {filtered.length} profils correspondent à vos critères — sélectionnez-en jusqu'à 3 pour comparer.
+            {filtered.length} profils correspondent à vos critères — sélectionnez-en jusqu'à 3 pour comparer. Données de démonstration.
           </p>
         </div>
 
@@ -76,6 +85,10 @@ export default function Creators() {
       <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
         {/* Sidebar filters */}
         <aside className="h-fit space-y-6 lg:sticky lg:top-24">
+          <div className="card-base p-5 space-y-4">
+            <label className="label-base block">Pays<select aria-label="Pays" className="input-base mt-2" value={country} onChange={e => setFilterParam("country", e.target.value)}><option value="">Tous les pays</option>{COUNTRIES.map(([code,flag,name]) => <option key={code} value={code}>{flag} {name}</option>)}</select></label>
+            <label className="label-base block">Langue<select aria-label="Langue" className="input-base mt-2" value={language} onChange={e => setFilterParam("language",e.target.value)}><option value="">Toutes les langues</option>{[["FR","Français"],["EN","Anglais"],["AR","Arabe"],["ES","Espagnol"]].map(([code,name])=><option key={code} value={code}>{name}</option>)}</select></label>
+          </div>
           <div className="card-base p-5">
             <h3 className="label-base">Recherche</h3>
             <input
