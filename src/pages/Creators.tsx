@@ -9,7 +9,7 @@ import { COUNTRIES } from "@/lib/marketing";
 const CATEGORIES: CreatorCategory[] = ["Beauté", "Food", "Lifestyle", "Tech", "Mode", "Sport", "Famille", "Voyage"];
 const STYLES: VideoStyle[] = ["Testimonial", "Unboxing", "Tutorial", "Narrative", "Skit"];
 
-type SortKey = "rating" | "followers" | "price" | "turnaround";
+type SortKey = "registered" | "rating" | "followers" | "price" | "turnaround";
 
 export default function Creators() {
   const { creators, loading, error } = useDirectory();
@@ -27,7 +27,7 @@ export default function Creators() {
   const [styles, setStyles] = useState<VideoStyle[]>([]);
   const [maxPrice, setMaxPrice] = useState(2000);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [sort, setSort] = useState<SortKey>("rating");
+  const [sort, setSort] = useState<SortKey>("registered");
   const [compare, setCompare] = useState<string[]>([]);
 
   const filtered = useMemo(() => {
@@ -42,6 +42,7 @@ export default function Creators() {
       return true;
     });
     list = list.sort((a, b) => {
+      if (sort === "registered") return Number(!!a.demo) - Number(!!b.demo) || a.name.localeCompare(b.name, "fr");
       if (sort === "rating") return b.rating - a.rating;
       if (sort === "followers") return b.followers - a.followers;
       if (sort === "price") return a.pricePerVideo - b.pricePerVideo;
@@ -59,6 +60,13 @@ export default function Creators() {
       prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 3 ? [...prev, id] : prev
     );
 
+  const resetFilters = () => {
+    setQuery(""); setCats([]); setStyles([]); setMaxPrice(2000);
+    setBudgetSet(false); setVerifiedOnly(false); setParams({});
+  };
+  const hasFilters = !!(country || language || query || cats.length || styles.length || budgetSet || verifiedOnly);
+  const registeredCount = filtered.filter(c => !c.demo).length;
+
   const comparedCreators = CREATORS.filter((c) => compare.includes(c.id));
 
   if (loading) return <div className="container py-16">Chargement des profils inscrits…</div>;
@@ -70,7 +78,7 @@ export default function Creators() {
           <span className="label-base">Casting</span>
           <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight md:text-5xl">Explorer les créateurs</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {filtered.length} profils correspondent à vos critères — sélectionnez-en jusqu'à 3 pour comparer. Profils enregistrés dans StarCast.
+            {registeredCount} profils inscrits · {filtered.length - registeredCount} profils de démonstration. Sélectionnez jusqu’à 3 profils pour comparer.
           </p>
         </div>
 
@@ -81,6 +89,7 @@ export default function Creators() {
             onChange={(e) => setSort(e.target.value as SortKey)}
             className="input-base max-w-[200px]"
           >
+            <option value="registered">Profils inscrits d’abord</option>
             <option value="rating">Note</option>
             <option value="followers">Audience</option>
             <option value="price">Prix croissant</option>
@@ -88,6 +97,11 @@ export default function Creators() {
           </select>
         </div>
       </div>
+
+      {hasFilters && <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4" role="status">
+        <p className="text-sm">Des filtres sont actifs{country ? ` · Pays : ${COUNTRIES.find(([code]) => code === country)?.[2] || country}` : ""}. Certains profils peuvent être masqués.</p>
+        <button className="btn-outline" onClick={resetFilters}>Voir tous les profils</button>
+      </div>}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
         {/* Sidebar filters */}
@@ -188,7 +202,7 @@ export default function Creators() {
               </div>
             </article>)}
           </div>
-          {!filtered.length && <div className="card-base p-10 text-center"><h2 className="font-semibold">Aucun créateur pour ces critères</h2><p className="mt-2 text-sm text-muted-foreground">Essayez un autre pays, une autre catégorie ou retirez le filtre de budget.</p><button className="sc-button mt-5" onClick={()=>{setQuery('');setCats([]);setStyles([]);setMaxPrice(2000);setBudgetSet(false);setVerifiedOnly(false);setParams({});}}>Réinitialiser les filtres</button></div>}
+          {!filtered.length && <div className="card-base p-10 text-center"><h2 className="font-semibold">Aucun créateur pour ces critères</h2><p className="mt-2 text-sm text-muted-foreground">Essayez un autre pays, une autre catégorie ou retirez le filtre de budget.</p><button className="sc-button mt-5" onClick={resetFilters}>Réinitialiser les filtres</button></div>}
 
           {/* Comparison panel */}
           {comparedCreators.length >= 2 && (
