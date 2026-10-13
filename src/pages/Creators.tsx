@@ -13,7 +13,7 @@ type SortKey = "rating" | "followers" | "price" | "turnaround";
 
 export default function Creators() {
   const { creators, loading, error } = useDirectory();
-  const [includeDemo, setIncludeDemo] = useState(false);
+  const [includeDemo, setIncludeDemo] = useState(true);
   const CREATORS = includeDemo ? [...creators, ...DEMO_CREATORS.map(c=>({...c,demo:true}))] : creators;
   const [budgetSet,setBudgetSet] = useState(false);
   const [params, setParams] = useSearchParams();
