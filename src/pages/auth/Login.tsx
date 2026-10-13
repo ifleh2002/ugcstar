@@ -101,7 +101,7 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between">
                 <label className="label-base" htmlFor="password">Mot de passe</label>
-                <span className="text-[11px] text-muted-foreground">6 caractères min.</span>
+                <Link to="/auth/forgot-password" className="text-[11px] font-semibold text-primary hover:underline">Mot de passe oublié ?</Link>
               </div>
               <input
                 id="password"

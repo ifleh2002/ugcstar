@@ -14,6 +14,7 @@ import Screenads from "@/pages/Screenads";
 import Contracts from "@/pages/Contracts";
 import ContractAnalytics from "@/pages/ContractAnalytics";
 import Activate from "@/pages/auth/Activate";
+import ForgotPassword from "@/pages/auth/ForgotPassword";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -77,6 +78,7 @@ export default function App() {
               <Route path="/contracts" element={<ProtectedRoute><Contracts /></ProtectedRoute>} />
               <Route path="/contracts/analytics" element={<ProtectedRoute roles={["admin", "collaborator"]}><ContractAnalytics /></ProtectedRoute>} />
               <Route path="/auth/activate" element={<Activate />} />
+              <Route path="/auth/forgot-password" element={<ForgotPassword />} />
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/register" element={<Register />} />
               <Route
